@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 import {
-  StyleSheet,
+  
   TouchableOpacity,
   KeyboardAvoidingView,
   Text,
@@ -17,7 +17,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import CheckBox from 'react-native-check-box'
 import * as BlinkIDReactNative from 'blinkid-react-native';
 import ImagePicker from 'react-native-image-picker';
-
+import {ENDPOINT_URL} from '../../config/config'
+import {styles} from '../../styles/consumer/signupStyle'
 
 const licenseKey = Platform.select({
     // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
@@ -50,7 +51,9 @@ export default class SignupPage extends Component{
         usertype : 0,
 
         validated : true,
-        isChecked : false
+        isChecked : false,
+        scanStatusText : 'Scan Driver lincese',
+        scaned : false
     };      
   } 
 
@@ -101,7 +104,6 @@ export default class SignupPage extends Component{
   }; 
 
   registerUser = () => {
-    this.props.navigation.navigate('ProductCategoryPage');
     if(this.state.email == ''){
         alert("Please enter email");
         return;
@@ -125,7 +127,11 @@ export default class SignupPage extends Component{
     if(this.state.photo.fileName == undefined){
         alert("Please select your photo");
         return;
-    }              
+    }   
+    if(this.state.scaned == false){
+      alert("Please scan driver license card");
+      return;
+  }                
     let userParam = {
         first_name : this.state.first_name,
         last_name : this.state.last_name,
@@ -138,13 +144,13 @@ export default class SignupPage extends Component{
         usertype : 0,            
     }
 
-    fetch("http://192.168.100.57:3000/addUser", {
+    fetch(ENDPOINT_URL+'addUser', {
       method: "POST",
       body: this.createFormData(this.state.photo, userParam)
     })
     .then(response => response.json())
     .then(response => {
-        console.log("response111111111", response.data.insert_id);
+        
         this.saveToStorage(response.data.insert_id);
         this.props.navigation.navigate('ProductCategoryPage');
     })
@@ -158,12 +164,12 @@ export default class SignupPage extends Component{
       email : this.state.email,
       userId : userId
     }
-    AsyncStorage.setItem('loginedUser', Json.stringfy(obj));
+     AsyncStorage.setItem('loginedUser', JSON.stringify(obj));
   }
   getStorageData= async() => {
     try{
       let loginedUserInfo = await AsyncStorage.getItem('loginedUser');
-      let parsedInfo =  Json.parse(loginedUserInfo);
+      let parsedInfo =  JSON.parse(loginedUserInfo);
     }
     catch(error){
       console.log(error);
@@ -192,6 +198,11 @@ export default class SignupPage extends Component{
                 this.setState({address : scanningResults[0].address});
             
             }
+            if(this.state.first_name != ''){
+              this.setState({scanStatusText : 'Scaned Successfully.'});
+              this.setState({scaned : true});   
+            }
+              
         }
 
     } catch (error) {
@@ -247,7 +258,7 @@ export default class SignupPage extends Component{
           <TouchableOpacity onPress={this.scan.bind(this)}>
             <View style={styles.driverlicenseview}> 
                 <Icon name="user"  size={25} color="#37d613" style={styles.icon}/>
-                <Text style={{color : '#a8a8a7'}} >Scan Driver license</Text>
+                <Text style={{color : '#a8a8a7'}} >{this.state.scanStatusText}</Text>
             </View>
 
           </TouchableOpacity>
@@ -282,95 +293,5 @@ export default class SignupPage extends Component{
   
 }
 
-const styles = StyleSheet.create({
-  container : {
-      alignItems : 'center',
-  },
-  backBtnView : {
-    width : '20%',
-    height : 40,
-    backgroundColor : '#23b825',
-    marginTop : 20,
-    alignItems : 'center',
-    justifyContent : 'center'
-  },
 
-  logopic: {
-    width : 150,
-    height : 150,
-    borderRadius: 100,
-},
-
-logopicWrap : {
-    alignItems : 'center',
-    justifyContent : 'center',
-    borderWidth : 3,
-    borderColor : '#2cc94e',
-    borderRadius: 100,
-    width : 170,
-    height : 170,
-    marginBottom : 20
-},
-camera : {
-  width : 80,
-  height : 80,
-},    
-checkboxview : {
-    flexDirection: 'row',
-    alignItems : 'center',
-    width : 320,
-    height: 60,
-    borderRadius:20,
-    borderColor : '#b3b0ad',
-    borderWidth : 0
-},   
-textinputview : {
-    flexDirection: 'row',
-    alignItems : 'center',
-    width : 320,
-    height: 60,
-    marginTop : 20,
-    borderRadius:20,
-    borderColor : '#b3b0ad',
-    borderWidth : 1
-}, 
-driverlicenseview : {
-    flexDirection: 'row',
-    alignItems : 'center',
-    width : 320,
-    height: 60,
-    marginTop : 20,
-    borderRadius:20,
-    borderColor : '#b3b0ad',
-    borderWidth : 1
-
-},          
-icon : {
-    marginLeft : 20,
-    marginRight : 20
-},
-textinput : {
-    width : 250,
-    height: 60,
-},
-signinBtn: {
-    marginTop : 10,
-    marginBottom : 30,
-    backgroundColor:'#23b825',
-    width : 320,
-    height: 50,
-    borderRadius:20,
-    justifyContent : 'center',
-    alignItems : 'center',
-    shadowColor: '#919090',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.9,
-    elevation: 10,  
-},
-signiText : {
-    color : 'white',
-    fontSize : 22,
-    fontWeight : '400'
-}  
-});
 
