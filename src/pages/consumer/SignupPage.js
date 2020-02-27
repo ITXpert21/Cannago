@@ -131,7 +131,7 @@ export default class SignupPage extends Component{
     if(this.state.scaned == false){
       alert("Please scan driver license card");
       return;
-  }                
+  ``}                
     let userParam = {
         first_name : this.state.first_name,
         last_name : this.state.last_name,
@@ -206,7 +206,7 @@ export default class SignupPage extends Component{
         }
 
     } catch (error) {
-                console.log(error);
+        console.log(error);
     }
   } 
 
@@ -239,7 +239,7 @@ export default class SignupPage extends Component{
           </View>
           <View style={styles.textinputview}> 
             <Icon name="lock"  size={25} color="#37d613" style={styles.icon}/>
-            <TextInput style={styles.textinput} placeholder="Password"
+            <TextInput style={styles.textinput} placeholder="Password" secureTextEntry={true}
                 onChangeText={ password=> this.setState({password})}  
             />
           </View>

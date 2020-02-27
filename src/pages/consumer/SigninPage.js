@@ -2,66 +2,129 @@
 import React, {Component} from 'react';
 
 import {
-  StyleSheet,
-  
-  Platform,
+  AsyncStorage,
+  Text,
+  Image,
+  View,
   SafeAreaView,
   ScrollView,
-  Dimensions
+  TextInput,
+  TouchableOpacity,
+  
 } from 'react-native';
 
-import Header from '../../components/consumer/signin/Header';
-import Content from '../../components/consumer/signin/Content';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const licenseKey = Platform.select({
-  // iOS license key for applicationID: com.cannagoapp.cannagrowdev
-  ios: 'sRwAAAEbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2dDpWAgbXAyPGVFY7cyIZFNWfk/lLQDZc4vYrOA6LwO/RNwHTS7ug+/oUSXeBafqpdlCAyBGzFWNMRhzW16v4O0NFF3ppHV6aGE+uodCBweQiysPu14w2zDzOZQWtT3DTb2N0hI9zbtxu1oWnv0QfRSS4hpZ69C33BiJKawPg46pHweeF/u2j+wttal8QQKVzEUtpmeJy1w3uEEBNrUWF/b6VF2KGfdU0dv9Ay1jMTR+ix+y/FAPfj/lCYSHj+2DORrx6PTd/tIT+TfBw',
-  // android license key for applicationID: com.cannagoapp.cannagrowdev
-  android: 'sRwAAAAbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2Smx+Aa0uoDFwpY2fpht5igmlM8eEyyeTDBGCBXmuVFjafsI1SNFFFCd3gGOjUFynbmqs5P/fqH7ayQ82u+vQ5weDFF9FunxYMy2y/+HFNDrAiExc6R0ZQdeyEIycV0QQGk/BGFsCqzdZ55LVsEM/OGUImr2Wdw6Hx5fW2cibGY9KCwPcYd732Cy6AlK+uMHKqEfwRLZvlfyJyp7J2CFIPqXmFqa/H0fKj483VfLppBltLA1FOk1UdrHKZaPkjPcvgnEVUFRKfRyn4JN3'
-})
+import {ENDPOINT_URL} from '../../config/config'
+import {styles} from '../../styles/consumer/signinStyle'
 
 export default class SigninPage extends Component{
   constructor(props){
-    super(props);
+    super(props); 
+    this.state = {
+      email : '',
+      password : ''
+    }
     
   } 
+
+  signinUser = () => {
+    fetch(ENDPOINT_URL+'userlogin', {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+       },
+      body: JSON.stringify({
+          email : this.state.email,
+          password : this.state.password
+        }
+      )      
+    })
+    .then(response => response.json())
+    .then(response => {
+      console.log(response);      
+      if(response.message == 'success'){
+        this.saveToStorage(response.data.id);
+        this.props.navigation.navigate('ProductCategoryPage');
+      }else{
+        alert("Incorrect email or password!");
+      }  
+    })
+    .catch(error => {
+      console.log(error);
+    }); 
+  }  
+
+  saveToStorage(userId){
+    let obj = {
+      email : this.state.email,
+      userId : userId
+    }
+     AsyncStorage.setItem('loginedUser', JSON.stringify(obj));
+  }
+
   render(){
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scrollableView}>
-          <Header/>
-          <Content 
+          <View style={styles.logopicWrap}>
+            <Image style={styles.logopic} source={require('../../assets/imgs/logo.jpg')} ></Image>
+            <Text style={styles.logoname}>Cannago</Text>
+            <Text style={styles.logouser}>for consumers</Text>
+          </View>
+
+          <View style={styles.textinputview}> 
+                <Icon name="envelope-o"  size={20} color="#37d613" style={styles.icon}/>
+                <TextInput style={styles.textinput} placeholder="Email Address"
+                  onChangeText={ email=> this.setState({email})}  
+                />
+            </View>
+            <View style={styles.textinputview}> 
+                <Icon name="lock"  size={25} color="#37d613" style={styles.icon}/>
+                <TextInput style={styles.textinput} placeholder="Password" secureTextEntry={true}
+                  onChangeText={ password=> this.setState({password})}
+                />
+            </View>
+            <TouchableOpacity style={styles.forgottextview} onPress={() => this.props.navigation.navigate('ForgotPwdPage')}>
+                <Text style={styles.forgottext}>Forgot Password?</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.signinUser()}>
+                <View style={styles.signinBtn}>
+                    <Text style={styles.signiText}>Sign in</Text>
+                </View>
+            </TouchableOpacity>
+            <View style={styles.signuptextView}> 
+                <Text style={styles.signupText}>Don't have account</Text>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('SignupPage')}>
+                    <Text style={styles.signupBtnText}>Sign up</Text>
+                </TouchableOpacity>
+ 
+            </View>
+            <TouchableOpacity  onPress={() => this.props.navigation.navigate('SigninDispensariesPage')}>
+                <View style={styles.userSelectView}>
+                    <Text style={styles.userSelectText}>Want to sell with us?</Text>
+                </View>
+            </TouchableOpacity>          
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('SigninDriverPage')}>
+                <View style={styles.userSelectView}>
+                    <Text style={styles.userSelectText}>Want to driver with us?</Text>
+                </View>
+            </TouchableOpacity>   
+            <View style={{marginBottom : 100}}>
+              </View>         
+        {/* <Content 
             gotoSignupPage={() => this.props.navigation.navigate('SignupPage')}
             gotoProductCategory={() => this.props.navigation.navigate('ProductCategoryPage')}
             gotoForgotPwdPage={() => this.props.navigation.navigate('ForgotPwdPage')}
             gotoDispensariesPage={() => this.props.navigation.navigate('SigninDispensariesPage')}
             gotoDriverPage={() => this.props.navigation.navigate('SigninDriverPage')}
-          />
+          /> */}
         </ScrollView>
       </SafeAreaView>
 
     );
   }
 }
-const screenHeight = Math.round(Dimensions.get('window').height) ;
-
-const styles = StyleSheet.create({
-  container : {
-      alignItems : 'center',
-  },
-  signuptextView : {
-    alignItems : 'center',
-    marginTop : 10,
-  },    
-  signupText : {
-      fontSize : 14,
-      fontWeight : 'bold' ,
-      color : '#787777'
-  },
-  scrollableView : {
-    height : screenHeight
-  }
-
-});
 
 
