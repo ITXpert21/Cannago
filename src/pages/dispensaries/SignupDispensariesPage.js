@@ -14,7 +14,6 @@ import Icon from 'react-native-vector-icons/Feather';
 import { ScrollView } from 'react-native-gesture-handler';
 import {ENDPOINT_URL} from '../../config/config'
 import {styles} from '../../styles/dispensary/signupStyle'
-import { Divider } from 'react-native-elements';
 import CheckBox from 'react-native-check-box'
 import ImagePicker from 'react-native-image-picker';
 
@@ -247,7 +246,7 @@ export default class SignupDispensariesPage extends Component{
                 />
             </View>
             <View style={styles.textinputview}> 
-                <Icon name="envelope-o"  size={20} color="#37d613" style={styles.icon}/>
+                <Icon name="mail"  size={20} color="#37d613" style={styles.icon}/>
                 <TextInput style={styles.textinput} placeholder="Dispensary Email Address"
                   onChangeText={ dispensary_email=> this.setState({dispensary_email})}
                 />
@@ -259,7 +258,7 @@ export default class SignupDispensariesPage extends Component{
                 />
             </View>
             <View style={styles.textinputview}> 
-                <Icon name="phone-square"  size={25} color="#37d613" style={styles.icon}/>
+                <Icon name="phone"  size={25} color="#37d613" style={styles.icon}/>
                 <TextInput style={styles.textinput} placeholder="Dispensary Mobile number"
                   onChangeText={ dispensary_phonenumber=> this.setState({dispensary_phonenumber})}
                 />
