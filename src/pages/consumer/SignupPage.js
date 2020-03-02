@@ -166,15 +166,7 @@ export default class SignupPage extends Component{
     }
      AsyncStorage.setItem('loginedUser', JSON.stringify(obj));
   }
-  getStorageData= async() => {
-    try{
-      let loginedUserInfo = await AsyncStorage.getItem('loginedUser');
-      let parsedInfo =  JSON.parse(loginedUserInfo);
-    }
-    catch(error){
-      console.log(error);
-    }
-  }
+
 
   async scan() {
     console.log("scam startomg");

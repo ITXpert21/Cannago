@@ -86,7 +86,6 @@ export  default class Tabs extends Component{
         case 'none' :
             return (
               <View style={styles.tabview}>
-              {/* 37d613    */}
                <TouchableOpacity style={styles.unselecttabhomeview} onPress={this.props.gotoProductsPage}>
                  <Icon name="home"  size={20} color="#adb0ab" />
                  <Text style={{color : '#adb0ab'}}>  Home</Text>

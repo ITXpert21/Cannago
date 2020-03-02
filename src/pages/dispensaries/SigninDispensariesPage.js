@@ -40,7 +40,6 @@ export default class SigninDispensariesPage extends Component{
     })
     .then(response => response.json())
     .then(response => {
-      console.log(response);      
       if(response.message == 'success'){
         this.saveToStorage(response.data.id);
         this.props.navigation.navigate('ProductsDispensariesPage');
@@ -54,9 +53,10 @@ export default class SigninDispensariesPage extends Component{
   }  
 
   saveToStorage(userId){
+
     let obj = {
       dispensary_email : this.state.dispensary_email,
-      userId : userId
+      dispensary_id : userId
     }
      AsyncStorage.setItem('loginedUser', JSON.stringify(obj));
   }

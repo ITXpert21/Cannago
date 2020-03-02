@@ -179,7 +179,7 @@ export default class SignupDispensariesPage extends Component{
     let obj = {
       dispensary_name : this.state.dispensary_name,
       dispensary_email : this.state.dispensary_email,
-      userId : userId,
+      dispensary_id : userId,
       usertype : 1
     }
      AsyncStorage.setItem('loginedUser', JSON.stringify(obj));
