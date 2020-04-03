@@ -11,6 +11,7 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Frameworks */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Frameworks */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		6B96BC4A243518E60051E772 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B96BC49243518E50051E772 /* GoogleService-Info.plist */; };
 		A26D9B13A4A1D0A44D98F588 /* libPods-Cannago.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 79666BCE05ECB74AF7033EFA /* libPods-Cannago.a */; };
 		CE98E04323DA6360003044DA /* FontAwesome5_Brands.ttf in Frameworks */ = {isa = PBXBuildFile; fileRef = CE98E03323DA635F003044DA /* FontAwesome5_Brands.ttf */; };
 		CE98E04423DA6360003044DA /* Foundation.ttf in Frameworks */ = {isa = PBXBuildFile; fileRef = CE98E03423DA635F003044DA /* Foundation.ttf */; };
@@ -46,6 +47,7 @@
 		1C4019FA0825345E5665EF61 /* Pods-Cannago-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Cannago-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Cannago-tvOSTests/Pods-Cannago-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		253D6F4C18C094613AA386FD /* Pods-CannagoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CannagoTests.release.xcconfig"; path = "Target Support Files/Pods-CannagoTests/Pods-CannagoTests.release.xcconfig"; sourceTree = "<group>"; };
 		5FF753F9EAB0C720AE31BE75 /* Pods-CannagoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CannagoTests.debug.xcconfig"; path = "Target Support Files/Pods-CannagoTests/Pods-CannagoTests.debug.xcconfig"; sourceTree = "<group>"; };
+		6B96BC49243518E50051E772 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Users/galaxy/Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		79666BCE05ECB74AF7033EFA /* libPods-Cannago.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Cannago.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		996DF376674BF4C207170A83 /* Pods-Cannago-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Cannago-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Cannago-tvOSTests/Pods-Cannago-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B312FAB1B56681062D5B0F7B /* Pods-Cannago.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Cannago.debug.xcconfig"; path = "Target Support Files/Pods-Cannago/Pods-Cannago.debug.xcconfig"; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 		13B07FAE1A68108700A75B9A /* Cannago */ = {
 			isa = PBXGroup;
 			children = (
+				6B96BC49243518E50051E772 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -279,6 +282,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B96BC4A243518E60051E772 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

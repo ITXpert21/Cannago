@@ -17,6 +17,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import CheckBox from 'react-native-check-box'
 import * as BlinkIDReactNative from 'blinkid-react-native';
 import ImagePicker from 'react-native-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const licenseKey = Platform.select({
@@ -203,6 +204,8 @@ export default class SignupPage extends Component{
   render(){
     return (
       <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled  /*keyboardVerticalOffset={30}*/>                 
+      <SafeAreaView>
+
        <TouchableOpacity onPress={() => this.props.navigation.navigate('SigninPage')}>
          <View style={styles.backBtnView}>
          <Icon name="arrow-left"  size={30} color="white"/>
@@ -274,8 +277,9 @@ export default class SignupPage extends Component{
           /> */}
         </View>
       </ScrollView>
-      </KeyboardAvoidingView>
+      </SafeAreaView>
 
+      </KeyboardAvoidingView>
     );
 
   }
