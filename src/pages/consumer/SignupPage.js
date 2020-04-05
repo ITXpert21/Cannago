@@ -136,7 +136,7 @@ export default class SignupPage extends Component{
         password : this.state.password,
         phonenumber : this.state.phonenumber,
         license_number : this.state.license_number,
-        usertype : 0,            
+        usertype : 0,          
     }
 
     fetch("http://192.168.100.57:3000/addUser", {
