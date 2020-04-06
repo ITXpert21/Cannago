@@ -42,6 +42,7 @@ export default class SignupPage extends Component{
       super(props);
       this.state = {
         photo: {},
+        photoUri: '',
         first_name : '',
         last_name : '',
         email : '',
@@ -55,7 +56,8 @@ export default class SignupPage extends Component{
         validated : true,
         isChecked : false,
         isLoading: false,
-        isToast : false
+        isToast : false,
+        uploading : false
     };      
   } 
 
@@ -85,7 +87,6 @@ export default class SignupPage extends Component{
       },
     };
     ImagePicker.showImagePicker(options, response => {
-      console.log('Response = ', response);
 
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -97,13 +98,90 @@ export default class SignupPage extends Component{
       } else {
         let source = response;
         // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        let sourceUri = { uri: 'data:image/jpeg;base64,' + response.uri };
         this.setState({
             photo: source,
+            photoUri: sourceUri
         });
+
       }
     });
   }; 
+
+  uriToBlob = (uri) => {
+
+    return new Promise((resolve, reject) => {
+
+      const xhr = new XMLHttpRequest();
+
+      xhr.onload = function() {
+        // return the blob
+        resolve(xhr.response);
+      };
+      
+      xhr.onerror = function() {
+        // something went wrong
+        reject(new Error('uriToBlob failed'));
+      };
+
+      // this helps us get a blob
+      xhr.responseType = 'blob';
+
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+
+    });
+
+  }
+
+  uploadToFirebase = (blob, uid) => {
+
+    return new Promise((resolve, reject)=>{
+      const ext = this.state.photoUri.uri.split('.').pop(); 
+      const filename = uid + '.' + ext;
+      var storageRef = Firebase.storage().ref();
+      storageRef.child('consumers/userImage/' + filename).put(blob, {
+        contentType: 'image/jpeg'
+      }).then((snapshot)=>{
+        blob.close();
+        storageRef.child('consumers/userImage/' + filename).getDownloadURL().then((downloadUrl)=>{
+        resolve(downloadUrl);
+       }).catch((error) => { throw error });
+      }).catch((error)=>{
+        reject(error);
+      });
+    });
+  }  
+
+  uploadImage = (uid) => {
+    const {uri} = this.state.photo;
+    this.uriToBlob(uri).then((blob)=>{
+      return this.uploadToFirebase(blob, uid);
+    }).then((downloadUrl)=>{
+      console.log('download URL', downloadUrl);
+      let userParam = {
+        first_name : this.state.first_name,
+        last_name : this.state.last_name,
+        email : this.state.email,
+        address : this.state.address,
+        zipcode : this.state.zipcode,
+        password : this.state.password,
+        phonenumber : this.state.phonenumber,
+        license_number : this.state.license_number,
+        uid : uid,
+        usertype : 'consumer', 
+        avatarUrl : downloadUrl         
+      };
+
+      userService.registerConsumer(userParam).then(response =>{
+        this.setState({isLoading: false});
+        this.props.navigation.navigate('ProductCategoryPage')
+      });   
+    }).catch((error)=>{
+      throw error;
+    });    
+  };
+
    registerUser() {
 
     if(this.state.email == ''){
@@ -126,27 +204,10 @@ export default class SignupPage extends Component{
 
     Firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then((res) =>{
-
-      let userParam = {
-        first_name : this.state.first_name,
-        last_name : this.state.last_name,
-        email : this.state.email,
-        address : this.state.address,
-        zipcode : this.state.zipcode,
-        password : this.state.password,
-        phonenumber : this.state.phonenumber,
-        license_number : this.state.license_number,
-        uid : res.user.uid,
-        usertype : 'consumer',          
-      };        
-      userService.registerConsumer(userParam).then(response =>{
-        this.setState({isLoading: false});
-        this.props.navigation.navigate('ProductCategoryPage')
-
-      });
+      this.uploadImage(res.user.uid);   
     }).catch(error => {
       this.setState({isLoading: false});
-      Toast.showWithGravity(error.message, Toast.SHORT , Toast.TOP);
+      Toast.showWithGravity(error.message, Toast.LONG , Toast.TOP);
     });
   }
 
