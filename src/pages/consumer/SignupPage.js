@@ -81,6 +81,9 @@ export default class SignupPage extends Component{
   chooseFile = () => {
     var options = {
       title: 'Select User Photo',
+      maxWidth : 300,
+      maxHeight : 300,
+      quality : 0.5,
       storageOptions: {
         skipBackup: true,
         path: 'images',
