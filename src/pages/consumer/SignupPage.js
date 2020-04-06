@@ -60,24 +60,6 @@ export default class SignupPage extends Component{
         uploading : false
     };      
   } 
-
-  createFormData = (photo, body) => {
-    const data = new FormData();
-
-    data.append("photo", {
-      name: photo.fileName,
-      type: photo.type,
-      uri:
-        Platform.OS === "android" ? photo.uri : photo.uri.replace("file://", "")
-    });
-
-    Object.keys(body).forEach(key => {
-      data.append(key, body[key]);
-    });
-
-    return data;
-  };
-
   chooseFile = () => {
     var options = {
       title: 'Select User Photo',
@@ -176,7 +158,9 @@ export default class SignupPage extends Component{
       };
 
       userService.registerConsumer(userParam).then(response =>{
-        this.setState({isLoading: false});
+        this.setState({isLoading: false, });
+        this._storeData(uid);
+
         this.props.navigation.navigate('ProductCategoryPage')
       });   
     }).catch((error)=>{
@@ -209,27 +193,25 @@ export default class SignupPage extends Component{
       this.uploadImage(res.user.uid);   
     }).catch(error => {
       this.setState({isLoading: false});
-      Toast.showWithGravity(error.message, Toast.LONG , Toast.TOP);
+      Toast.showWithGravity(error.message, Toast.SHORT , Toast.TOP);
     });
   }
 
+  async _storeData(uid) {
+    try {
+      var userObj = {
+        email : this.state.email,
+        password : this.state.password,
+        uid : uid 
+      }
+     await AsyncStorage.setItem('userInfo', JSON.stringify(userObj));
+      //return jsonOfItem;
 
-  saveToStorage(userId){
-    let obj = {
-      email : this.state.email,
-      userId : userId
-    }
-    AsyncStorage.setItem('loginedUser', Json.stringfy(obj));
-  }
-  getStorageData= async() => {
-    try{
-      let loginedUserInfo = await AsyncStorage.getItem('loginedUser');
-      let parsedInfo =  Json.parse(loginedUserInfo);
-    }
-    catch(error){
-      console.log(error);
+    } catch (error) {
+      console.log(error.message);
     }
   }
+
 
   async scan() {
     console.log("scam startomg");
@@ -291,7 +273,7 @@ export default class SignupPage extends Component{
           </View>
           <View style={styles.textinputview}> 
             <Icon name="lock"  size={25} color="#37d613" style={styles.icon}/>
-            <TextInput style={styles.textinput} placeholder="Password"
+            <TextInput style={styles.textinput} placeholder="Password" secureTextEntry={true}
                 onChangeText={ password=> this.setState({password})}  
             />
           </View>

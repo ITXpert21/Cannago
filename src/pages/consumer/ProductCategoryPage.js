@@ -4,6 +4,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  AsyncStorage,
   View
 } from 'react-native';
 import { SearchBar} from 'react-native-elements';
@@ -11,12 +12,24 @@ import Category from '../../components/consumer/product/Category';
 import Tabs from '../../components/consumer/tab/Tabs';
 
 export  default class ProductCategoryPage extends Component{
-  state = {
-    selectTab: 'home'
-  };  
+ 
   constructor(props){
     super(props);
-  }   
+    this.state = {
+      selectTab: 'home'
+    }; 
+    this.getStorageData();
+  }  
+  
+  getStorageData= async() => {
+    try{
+      var userInfo = await AsyncStorage.getItem('userInfo');
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
   updateSearch = search => {
     this.setState({ search });
   };
