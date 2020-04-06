@@ -158,7 +158,6 @@ export default class SignupPage extends Component{
     this.uriToBlob(uri).then((blob)=>{
       return this.uploadToFirebase(blob, uid);
     }).then((downloadUrl)=>{
-      console.log('download URL', downloadUrl);
       let userParam = {
         first_name : this.state.first_name,
         last_name : this.state.last_name,
