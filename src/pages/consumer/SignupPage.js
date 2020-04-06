@@ -9,6 +9,7 @@ import {
   Image, 
   Platform,
   AsyncStorage,
+  ActivityIndicator,
   View
 } from 'react-native';
 
@@ -18,8 +19,9 @@ import CheckBox from 'react-native-check-box'
 import * as BlinkIDReactNative from 'blinkid-react-native';
 import ImagePicker from 'react-native-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import userService from '../../services/userService';
+import Toast from 'react-native-simple-toast';
+import Firebase from '../../config/firebase'
 const licenseKey = Platform.select({
     // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
     ios: 'sRwAAAEbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2dDpWAgbXAyPGVFY7cyIZFNWfk/lLQDZc4vYrOA6LwO/RNwHTS7ug+/oUSXeBafqpdlCAyBGzFWNMRhzW16v4O0NFF3ppHV6aGE+uodCBweQiysPu14w2zDzOZQWtT3DTb2N0hI9zbtxu1oWnv0QfRSS4hpZ69C33BiJKawPg46pHweeF/u2j+wttal8QQKVzEUtpmeJy1w3uEEBNrUWF/b6VF2KGfdU0dv9Ay1jMTR+ix+y/FAPfj/lCYSHj+2DORrx6PTd/tIT+TfBw',
@@ -51,7 +53,9 @@ export default class SignupPage extends Component{
         usertype : 0,
 
         validated : true,
-        isChecked : false
+        isChecked : false,
+        isLoading: false,
+        isToast : false
     };      
   } 
 
@@ -100,34 +104,30 @@ export default class SignupPage extends Component{
       }
     });
   }; 
+   registerUser() {
 
-  registerUser = () => {
-    this.props.navigation.navigate('ProductCategoryPage');
     if(this.state.email == ''){
-        alert("Please enter email");
-        return;
+      Toast.showWithGravity('Please insert email.', Toast.SHORT , Toast.TOP);
+      return;
     }
-    if(this.state.zipcode == ''){
-        alert("Please enter zipcode");
-        return;
-    }            
     if(this.state.password == ''){
-        alert("Please enter password");
-        return;
-    }  
+      Toast.showWithGravity('Please insert password.', Toast.SHORT , Toast.TOP);
+      return;
+    }     
+    if(this.state.zipcode == ''){
+      Toast.showWithGravity('Please insert zip code.', Toast.SHORT , Toast.TOP);
+      return;
+    }
     if(this.state.phonenumber == ''){
-        alert("Please enter phonenumber");
-        return;
-    } 
-    if(!this.state.isChecked ){
-        alert("Please check Cannago's Terms & Condition");
-        return;
-    }   
-    if(this.state.photo.fileName == undefined){
-        alert("Please select your photo");
-        return;
-    }              
-    let userParam = {
+      Toast.showWithGravity('Please insert phone number.', Toast.SHORT , Toast.TOP);
+      return;
+    }  
+    this.setState({ isLoading: true });
+
+    Firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then((res) =>{
+
+      let userParam = {
         first_name : this.state.first_name,
         last_name : this.state.last_name,
         email : this.state.email,
@@ -136,23 +136,20 @@ export default class SignupPage extends Component{
         password : this.state.password,
         phonenumber : this.state.phonenumber,
         license_number : this.state.license_number,
-        usertype : 0,          
-    }
+        uid : res.user.uid,
+        usertype : 'consumer',          
+      };        
+      userService.registerConsumer(userParam).then(response =>{
+        this.setState({isLoading: false});
+        this.props.navigation.navigate('ProductCategoryPage')
 
-    fetch("http://192.168.100.57:3000/addUser", {
-      method: "POST",
-      body: this.createFormData(this.state.photo, userParam)
-    })
-    .then(response => response.json())
-    .then(response => {
-        console.log("response111111111", response.data.insert_id);
-        this.saveToStorage(response.data.insert_id);
-        this.props.navigation.navigate('ProductCategoryPage');
-    })
-    .catch(error => {
-      console.log(error);
-    });    
-  };
+      });
+    }).catch(error => {
+      this.setState({isLoading: false});
+      Toast.showWithGravity(error.message, Toast.SHORT , Toast.TOP);
+    });
+  }
+
 
   saveToStorage(userId){
     let obj = {
@@ -202,10 +199,10 @@ export default class SignupPage extends Component{
 
 
   render(){
+  
     return (
       <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column',justifyContent: 'center',}} behavior="padding" enabled  /*keyboardVerticalOffset={30}*/>                 
       <SafeAreaView>
-
        <TouchableOpacity onPress={() => this.props.navigation.navigate('SigninPage')}>
          <View style={styles.backBtnView}>
          <Icon name="arrow-left"  size={30} color="white"/>
@@ -269,8 +266,12 @@ export default class SignupPage extends Component{
           </View>           
           <TouchableOpacity onPress={() => this.registerUser()}>
             <View style={styles.signinBtn}>
-                <Text style={styles.signiText}>Create Account</Text>
+              <Text style={styles.signiText}>Create Account</Text>
             </View>
+            {this.state.isLoading &&
+              <ActivityIndicator size="large" color="#9E9E9E"/>
+            }   
+            
           </TouchableOpacity>
           {/* <Content 
             gotoProductCategoryPage={() => this.props.navigation.navigate('ProductCategoryPage')}
@@ -294,7 +295,6 @@ const styles = StyleSheet.create({
     width : '20%',
     height : 40,
     backgroundColor : '#23b825',
-    marginTop : 20,
     alignItems : 'center',
     justifyContent : 'center'
   },
