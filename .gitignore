@@ -89,7 +89,8 @@ typings/
 
 # Optional eslint cache
 .eslintcache
-
+.DS_Store
+src/components/.DS_Store
 # Optional REPL history
 .node_repl_history
 
