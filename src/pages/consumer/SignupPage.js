@@ -21,7 +21,9 @@ import ImagePicker from 'react-native-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import userService from '../../services/userService';
 import Toast from 'react-native-simple-toast';
-import Firebase from '../../config/firebase'
+import Firebase from '../../config/firebase';
+import RNFetchBlob from 'react-native-fetch-blob'
+// import ImagePicker from 'react-native-image-crop-picker';
 const licenseKey = Platform.select({
     // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
     ios: 'sRwAAAEbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2dDpWAgbXAyPGVFY7cyIZFNWfk/lLQDZc4vYrOA6LwO/RNwHTS7ug+/oUSXeBafqpdlCAyBGzFWNMRhzW16v4O0NFF3ppHV6aGE+uodCBweQiysPu14w2zDzOZQWtT3DTb2N0hI9zbtxu1oWnv0QfRSS4hpZ69C33BiJKawPg46pHweeF/u2j+wttal8QQKVzEUtpmeJy1w3uEEBNrUWF/b6VF2KGfdU0dv9Ay1jMTR+ix+y/FAPfj/lCYSHj+2DORrx6PTd/tIT+TfBw',
@@ -35,7 +37,11 @@ var renderIf = function(condition, content) {
   } 
   return (<Image style={styles.camera} source={require('../../assets/imgs/camera.png')} ></Image>);
 }
-
+// Prepare Blob support
+const Blob = RNFetchBlob.polyfill.Blob
+const fs = RNFetchBlob.fs
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+window.Blob = Blob
 export default class SignupPage extends Component{
 
   constructor(props){
@@ -63,9 +69,9 @@ export default class SignupPage extends Component{
   chooseFile = () => {
     var options = {
       title: 'Select User Photo',
-      maxWidth : 300,
-      maxHeight : 300,
       quality : 0.5,
+      maxWidth : 200,
+      maxHeight : 200,
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -86,86 +92,45 @@ export default class SignupPage extends Component{
         let sourceUri = { uri: 'data:image/jpeg;base64,' + response.uri };
         this.setState({
             photo: source,
-            photoUri: sourceUri
+            photoUri: response.uri
         });
 
       }
     });
+  
   }; 
 
-  uriToBlob = (uri) => {
+
+  uploadImage = (uid, uri, mime = 'application/octet-stream') => {
 
     return new Promise((resolve, reject) => {
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+      let uploadBlob = null
 
-      const xhr = new XMLHttpRequest();
-
-      xhr.onload = function() {
-        // return the blob
-        resolve(xhr.response);
-      };
-      
-      xhr.onerror = function() {
-        // something went wrong
-        reject(new Error('uriToBlob failed'));
-      };
-
-      // this helps us get a blob
-      xhr.responseType = 'blob';
-
-      xhr.open('GET', uri, true);
-      xhr.send(null);
-
-    });
-
-  }
-
-  uploadToFirebase = (blob, uid) => {
-
-    return new Promise((resolve, reject)=>{
-      const ext = this.state.photoUri.uri.split('.').pop(); 
+      const ext = uri.split('.').pop(); 
       const filename = uid + '.' + ext;
-      var storageRef = Firebase.storage().ref();
-      storageRef.child('consumers/userImage/' + filename).put(blob, {
-        contentType: 'image/jpeg'
-      }).then((snapshot)=>{
-        blob.close();
-        storageRef.child('consumers/userImage/' + filename).getDownloadURL().then((downloadUrl)=>{
-        resolve(downloadUrl);
-       }).catch((error) => { throw error });
-      }).catch((error)=>{
-        reject(error);
-      });
-    });
-  }  
 
-  uploadImage = (uid) => {
-    const {uri} = this.state.photo;
-    this.uriToBlob(uri).then((blob)=>{
-      return this.uploadToFirebase(blob, uid);
-    }).then((downloadUrl)=>{
-      let userParam = {
-        first_name : this.state.first_name,
-        last_name : this.state.last_name,
-        email : this.state.email,
-        address : this.state.address,
-        zipcode : this.state.zipcode,
-        password : this.state.password,
-        phonenumber : this.state.phonenumber,
-        license_number : this.state.license_number,
-        uid : uid,
-        usertype : 'consumer', 
-        avatarUrl : downloadUrl         
-      };
+      const imageRef = Firebase.storage().ref().child('consumers/userImage/' + filename);
 
-      userService.registerConsumer(userParam).then(response =>{
-        this.setState({isLoading: false, });
-        this._storeData(uid);
-
-        this.props.navigation.navigate('ProductCategoryPage')
-      });   
-    }).catch((error)=>{
-      throw error;
-    });    
+      fs.readFile(uploadUri, 'base64')
+        .then((data) => {
+          return Blob.build(data, { type: `${mime};BASE64` })
+        })
+        .then((blob) => {
+          uploadBlob = blob
+          return imageRef.put(blob, { contentType: 'image/jpeg' })
+        })
+        .then(() => {
+          uploadBlob.close()
+          return imageRef.getDownloadURL()
+        })
+        .then((url) => {
+          resolve(url)
+        })
+        .catch((error) => {
+          reject(error)
+      })
+    })
   };
 
    registerUser() {
@@ -187,26 +152,48 @@ export default class SignupPage extends Component{
       return;
     }  
     this.setState({ isLoading: true });
+    let userParam = {
+      first_name : this.state.first_name,
+      last_name : this.state.last_name,
+      email : this.state.email,
+      address : this.state.address,
+      zipcode : this.state.zipcode,
+      password : this.state.password,
+      phonenumber : this.state.phonenumber,
+      license_number : this.state.license_number,
+      usertype : 'consumer', 
+    };
 
     Firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
     .then((res) =>{
-      this.uploadImage(res.user.uid);   
+      userParam.uid = res.user.uid;
+      console.log('userparam', userParam);
+      if(this.state.photoUri == ''){
+        userService.registerConsumer(userParam).then(response =>{
+          this.setState({isLoading: false, });
+          this._storeData(userParam);
+          this.props.navigation.navigate('ProductCategoryPage')
+        });   
+      }else{
+        this.uploadImage(res.user.uid, this.state.photoUri)
+        .then(url => { 
+          userParam.photo_url = url;
+          userService.registerConsumer(userParam).then(response =>{
+            this.setState({isLoading: false, });
+            this._storeData(userParam);
+            this.props.navigation.navigate('ProductCategoryPage')
+          });   
+        }).catch(error => console.log(error));
+      }  
     }).catch(error => {
       this.setState({isLoading: false});
       Toast.showWithGravity(error.message, Toast.SHORT , Toast.TOP);
     });
   }
 
-  async _storeData(uid) {
+  async _storeData(userParam) {
     try {
-      var userObj = {
-        email : this.state.email,
-        password : this.state.password,
-        uid : uid 
-      }
-     await AsyncStorage.setItem('userInfo', JSON.stringify(userObj));
-      //return jsonOfItem;
-
+     await AsyncStorage.setItem('userInfo', JSON.stringify(userParam));
     } catch (error) {
       console.log(error.message);
     }
@@ -256,7 +243,7 @@ export default class SignupPage extends Component{
 
       <ScrollView >
         <View style={styles.container}>
-          <TouchableOpacity onPress={this.chooseFile.bind(this)}>
+          <TouchableOpacity onPress={() => this.chooseFile()} >
             <View style={styles.logopicWrap} >
                 {renderIf(this.state.photo.uri,
                     <Image style={styles.logopic} source={{ uri: this.state.photo.uri }} ></Image>
@@ -308,19 +295,15 @@ export default class SignupPage extends Component{
                 rightText={"By checking this I agree to Cannago's Terms & Conditions"}
                 rightTextStyle={{color : '#9c9c9c'}}
                 />                    
-          </View>           
+          </View>       
+          {this.state.isLoading &&
+              <ActivityIndicator size="large" color="#9E9E9E"/>
+            }       
           <TouchableOpacity onPress={() => this.registerUser()}>
             <View style={styles.signinBtn}>
               <Text style={styles.signiText}>Create Account</Text>
             </View>
-            {this.state.isLoading &&
-              <ActivityIndicator size="large" color="#9E9E9E"/>
-            }   
-            
           </TouchableOpacity>
-          {/* <Content 
-            gotoProductCategoryPage={() => this.props.navigation.navigate('ProductCategoryPage')}
-          /> */}
         </View>
       </ScrollView>
       </SafeAreaView>
