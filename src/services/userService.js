@@ -14,12 +14,10 @@ class UserService {
   registerDispensary(addParam){
 
     const newDispensaryRef = Firebase.database().ref().child('dispensaries').push();
-    const newDispensarytKey = newDispensaryRef.key;
-    console.log('newDispensarytKey', newDispensarytKey);    
-    console.log('addparam', addParam);    
 
-   // addParam.dispensaryId = newDispensarytKey;
-    console.log('addparam', addParam);
+    const newDispensarytKey = newDispensaryRef.key;
+    addParam.dispensaryId = newDispensarytKey;
+    
     let dispensaryRef = Firebase.database().ref('dispensaries/' + newDispensarytKey);
     return dispensaryRef.set(addParam).then((res)=>{
       return addParam;

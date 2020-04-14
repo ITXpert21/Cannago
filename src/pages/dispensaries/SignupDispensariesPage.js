@@ -20,7 +20,7 @@ import ImagePicker from 'react-native-image-picker';
 import userService from '../../services/userService';
 import Firebase from '../../config/firebase'
 import Toast from 'react-native-simple-toast';
-
+import RNFetchBlob from 'react-native-fetch-blob';
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
 
@@ -30,6 +30,11 @@ var renderIf = function(condition, content) {
   } 
   return (<Image style={styles.camera} source={require('../../assets/imgs/camera.png')} ></Image>);
 }
+// Prepare Blob support
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
 export default class SignupDispensariesPage extends Component{
 
  constructor(props){
@@ -80,7 +85,7 @@ export default class SignupDispensariesPage extends Component{
         let sourceUri = { uri: 'data:image/jpeg;base64,' + response.uri };
         this.setState({
             photo: source,
-            photoUri: sourceUri
+            photoUri: response.uri
         });
       }
     });
@@ -88,138 +93,127 @@ export default class SignupDispensariesPage extends Component{
 
   registerDispensary() {
 
-    // if(this.state.first_name == ''){
-    //   Toast.showWithGravity('Please insert first name.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }
-    // if(this.state.last_name == ''){
-    //   Toast.showWithGravity('Please insert last_name.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }     
-    // if(this.state.email == ''){
-    //   Toast.showWithGravity('Please insert owner email.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }
-    // if(this.state.phonenumber == ''){
-    //   Toast.showWithGravity('Please insert owner phone number.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }  
-    // if(this.state.storename == ''){
-    //   Toast.showWithGravity('Please insert dispensary name.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }     
-    // if(this.state.dispensary_email == ''){
-    //   Toast.showWithGravity('Please insert dispensary email.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }     
-    // if(this.state.dispensary_pwd == ''){
-    //   Toast.showWithGravity('Please insert dispensary password.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }  
-    // if(this.state.dispensary_address == ''){
-    //   Toast.showWithGravity('Please insert dispensary address.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }      
-    // if(this.state.dispensary_phonenum == ''){
-    //   Toast.showWithGravity('Please insert dispensary phone number.', Toast.SHORT , Toast.TOP);
-    //   return;
-    // }              
+    if(this.state.first_name == ''){
+      Toast.showWithGravity('Please insert first name.', Toast.SHORT , Toast.TOP);
+      return;
+    }
+    if(this.state.last_name == ''){
+      Toast.showWithGravity('Please insert last_name.', Toast.SHORT , Toast.TOP);
+      return;
+    }     
+    if(this.state.email == ''){
+      Toast.showWithGravity('Please insert owner email.', Toast.SHORT , Toast.TOP);
+      return;
+    }
+    if(this.state.phonenumber == ''){
+      Toast.showWithGravity('Please insert owner phone number.', Toast.SHORT , Toast.TOP);
+      return;
+    }  
+    if(this.state.storename == ''){
+      Toast.showWithGravity('Please insert dispensary name.', Toast.SHORT , Toast.TOP);
+      return;
+    }     
+    if(this.state.dispensary_email == ''){
+      Toast.showWithGravity('Please insert dispensary email.', Toast.SHORT , Toast.TOP);
+      return;
+    }     
+    if(this.state.dispensary_pwd == ''){
+      Toast.showWithGravity('Please insert dispensary password.', Toast.SHORT , Toast.TOP);
+      return;
+    }  
+    if(this.state.dispensary_address == ''){
+      Toast.showWithGravity('Please insert dispensary address.', Toast.SHORT , Toast.TOP);
+      return;
+    }      
+    if(this.state.dispensary_phonenum == ''){
+      Toast.showWithGravity('Please insert dispensary phone number.', Toast.SHORT , Toast.TOP);
+      return;
+    }    
+              
     this.setState({ isLoading: true });
+
+    let dispensaryParam = {
+      owner_info : {
+        first_name: this.state.first_name,
+        last_name : this.state.last_name,
+        phonenumber : this.state.phonenumber,
+        email : this.state.email
+      },
+      dispensary_info : {
+        storename : this.state.storename,
+        dispensary_email : this.state.dispensary_email,
+        dispensary_pwd : this.state.dispensary_pwd,
+        dispensary_address : this.state.dispensary_address,
+        dispensary_phonenum : this.state.dispensary_phonenum,
+        dispensary_hour : this.state.dispensary_hour
+      },
+      tax_info : {
+        companyname : this.state.companyname,
+        feinumber : this.state.feinumber,
+      },
+      usertype : 'dispensary', 
+    };
 
     Firebase.auth().createUserWithEmailAndPassword(this.state.dispensary_email, this.state.dispensary_pwd)
     .then((res) =>{
-      this.uploadImage(res.user.uid);   
-      this.setState({isLoading: false});
+      dispensaryParam.uid = res.user.uid;
+
+      if(this.state.photoUri == ''){
+        userService.registerDispensary(dispensaryParam).then(response =>{
+          this.setState({isLoading: false});
+          this._storeData(dispensaryParam);
+          //this.props.navigation.navigate('ProductCategoryPage')
+        });   
+      }else{
+        this.uploadImage(res.user.uid, this.state.photoUri)
+        .then(url => { 
+          dispensaryParam.photo_url = url;
+          userService.registerDispensary(dispensaryParam).then(response =>{
+            this.setState({isLoading: false, });
+            //this._storeData(userParam);
+            //this.props.navigation.navigate('ProductCategoryPage')
+          });   
+        }).catch(error => console.log(error));
+      }  
     }).catch(error => {
       this.setState({isLoading: false});
       Toast.showWithGravity(error.message, Toast.SHORT , Toast.TOP);
     });
   }
 
-  uploadImage = (uid) => {
-    const {uri} = this.state.photo;
-    this.uriToBlob(uri).then((blob)=>{
-      return this.uploadToFirebase(blob, uid);
-    }).then((downloadUrl)=>{
-      let dispensaryParam = {
-        owner_info : {
-          first_name: this.state.first_name,
-          last_name : this.state.first_name,
-          phonenumber : this.state.phonenumber,
-          email : this.state.email
-        },
-        dispensary_info : {
-          storename : this.state.storename,
-          dispensary_email : this.state.dispensary_email,
-          dispensary_pwd : this.state.dispensary_pwd,
-          dispensary_address : this.state.dispensary_address,
-          dispensary_phonenum : this.state.dispensary_phonenum,
-          dispensary_hour : this.state.dispensary_hour
-        },
-        tax_info : {
-          companyname : this.state.companyname,
-          feinumber : this.state.feinumber,
-        },
-        uid : uid,
-        usertype : 'dispensary', 
-        photoUrl : downloadUrl
-      };
-
-      userService.registerDispensary(dispensaryParam).then(response =>{
-        this.setState({isLoading: false, });
-        // this._storeData(uid);
-
-        // this.props.navigation.navigate('ProductCategoryPage')
-      });   
-    }).catch((error)=>{
-      throw error;
-    });    
-  };  
-
-  uploadToFirebase = (blob, uid) => {
-
-    return new Promise((resolve, reject)=>{
-      const ext = this.state.photoUri.uri.split('.').pop(); 
-      const filename = uid + '.' + ext;
-      var storageRef = Firebase.storage().ref();
-      storageRef.child('dispensary/dispensaryImage/' + filename).put(blob, {
-        contentType: 'image/jpeg'
-      }).then((snapshot)=>{
-        blob.close();
-        storageRef.child('consumers/userImage/' + filename).getDownloadURL().then((downloadUrl)=>{
-        resolve(downloadUrl);
-       }).catch((error) => { throw error });
-      }).catch((error)=>{
-        reject(error);
-      });
-    });
-  }  
-
-  uriToBlob = (uri) => {
+  uploadImage = (uid, uri, mime = 'application/octet-stream') => {
 
     return new Promise((resolve, reject) => {
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+      let uploadBlob = null
 
-      const xhr = new XMLHttpRequest();
+      const ext = uri.split('.').pop(); 
+      const filename = uid + '.' + ext;
 
-      xhr.onload = function() {
-        // return the blob
-        resolve(xhr.response);
-      };
-      
-      xhr.onerror = function() {
-        // something went wrong
-        reject(new Error('uriToBlob failed'));
-      };
+      const imageRef = Firebase.storage().ref().child('dispensary/dispensaryImage/' + filename);
 
-      // this helps us get a blob
-      xhr.responseType = 'blob';
+      fs.readFile(uploadUri, 'base64')
+        .then((data) => {
+          return Blob.build(data, { type: `${mime};BASE64` })
+        })
+        .then((blob) => {
+          uploadBlob = blob
+          return imageRef.put(blob, { contentType: 'image/jpeg' })
+        })
+        .then(() => {
+          uploadBlob.close()
+          return imageRef.getDownloadURL()
+        })
+        .then((url) => {
+          resolve(url)
+        })
+        .catch((error) => {
+          reject(error)
+      })
+    })
+  };
 
-      xhr.open('GET', uri, true);
-      xhr.send(null);
 
-    });
-
-  }  
   render(){
     return (
       <SafeAreaView style={styles.container}>
@@ -246,12 +240,12 @@ export default class SignupDispensariesPage extends Component{
             <TextInput style={styles.textinput} placeholder="First Name" onChangeText={ first_name=> this.setState({first_name})}/>
           </View>
           <View style={styles.textinputview}> 
-            <Icon name="user"  size={20} color="#37d613" style={styles.icon} onChangeText={ last_name=> this.setState({last_name})}/>
-            <TextInput style={styles.textinput} placeholder="Last Name"/>
+            <Icon name="user"  size={20} color="#37d613" style={styles.icon} />
+            <TextInput style={styles.textinput} placeholder="Last Name" onChangeText={ last_name=> this.setState({last_name})}/>
           </View>
           <View style={styles.textinputview}> 
             <Icon name="mail"  size={20} color="#37d613" style={styles.icon}/>
-            <TextInput style={styles.textinput} placeholder="Owner's Email Address" onChangeText={ enail=> this.setState({enail})}/>
+            <TextInput style={styles.textinput} placeholder="Owner's Email Address" onChangeText={ email=> this.setState({email})}/>
           </View>
           <View style={styles.textinputview}> 
             <Icon name="phone"  size={25} color="#37d613" style={styles.icon}/>
@@ -273,7 +267,7 @@ export default class SignupDispensariesPage extends Component{
           </View>
           <View style={styles.textinputview}> 
             <Icon name="lock"  size={25} color="#37d613" style={styles.icon}/>
-            <TextInput style={styles.textinput} placeholder="Password" 
+            <TextInput style={styles.textinput} placeholder="Password" secureTextEntry={true}
               onChangeText={ dispensary_pwd=> this.setState({dispensary_pwd})} />
           </View>
           <View style={styles.textinputview}> 

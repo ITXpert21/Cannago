@@ -9,9 +9,13 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  View
+  View,
+  ActivityIndicator,
+  AsyncStorage
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Firebase from '../../config/firebase'
+import Toast from 'react-native-simple-toast';
 
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
@@ -19,8 +23,44 @@ const screenHeight = Math.round(Dimensions.get('window').height);
 export default class SigninDispensariesPage extends Component{
   constructor(props){
     super(props);
-    
-} 
+    this.state = {
+      email : '',
+      password : '',
+      isLoading: false,
+    }; 
+  } 
+  async _storeData(uid) {
+    try {
+      var userObj = {
+        email : this.state.email,
+        password : this.state.password,
+        uid : uid 
+      }
+     await AsyncStorage.setItem('userInfo', JSON.stringify(userObj));
+      //return jsonOfItem;
+
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  signin = () => {
+    if(this.state.email === '' && this.state.password === '') {
+      Toast.showWithGravity('Enter email or password', Toast.LONG , Toast.TOP);
+    } else {
+      this.setState({isLoading: true});
+
+      Firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then((res) => {
+        this.setState({isLoading: false});
+        this._storeData(res.user.uid);
+        this.props.navigation.navigate('ProductsDispensariesPage')
+      })
+      .catch((error) => {
+        this.setState({isLoading: false});
+        Toast.showWithGravity(error.message, Toast.SHORT , Toast.TOP);
+      })
+    }
+  }     
   render(){
     return (
       <SafeAreaView>
@@ -33,16 +73,23 @@ export default class SigninDispensariesPage extends Component{
           </View>
           <View style={styles.textinputview}> 
             <Icon name="envelope-o"  size={20} color="#37d613" style={styles.icon}/>
-            <TextInput style={styles.textinput} placeholder="Email Address"/>
+            <TextInput style={styles.textinput} placeholder="Email Address"
+              onChangeText={ email=> this.setState({email})}
+            />
           </View>
           <View style={styles.textinputview}> 
             <Icon name="lock"  size={25} color="#37d613" style={styles.icon}/>
-            <TextInput style={styles.textinput} placeholder="Password"/>
+            <TextInput style={styles.textinput} placeholder="Password" secureTextEntry={true}
+              onChangeText={ password=> this.setState({password})}
+            />
           </View>
           <TouchableOpacity style={styles.forgottextview} onPress={() => this.props.navigation.navigate('ForgotPwdPage')}>
             <Text style={styles.forgottext}>Forgot Password?</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('ProductsDispensariesPage')}>
+          {this.state.isLoading &&
+              <ActivityIndicator size="large" color="#9E9E9E"/>
+            }   
+          <TouchableOpacity onPress={()=> this.signin()}>
             <View style={styles.signinBtn}>
               <Text style={styles.signiText}>Sign in</Text>
             </View>

@@ -16,7 +16,6 @@ export default class SigninPage extends Component{
       email : '',
       password : '',
       isLoading: false,
-
     };  
   }
 
@@ -81,14 +80,15 @@ export default class SigninPage extends Component{
             <TouchableOpacity style={styles.forgottextview} onPress={this.props.gotoForgotPwdPage}>
               <Text style={styles.forgottext}>Forgot Password?</Text>
             </TouchableOpacity>
+            {this.state.isLoading &&
+              <ActivityIndicator size="large" color="#9E9E9E"/>
+            }               
             <TouchableOpacity onPress={()=> this.signin()}>
               <View style={styles.signinBtn}>
                 <Text style={styles.signiText}>Sign in</Text>
               </View>
             </TouchableOpacity>
-            {this.state.isLoading &&
-              <ActivityIndicator size="large" color="#9E9E9E"/>
-            }   
+
 
             <View style={styles.signuptextView}> 
               <Text style={styles.signupText}>Don't have account</Text>
