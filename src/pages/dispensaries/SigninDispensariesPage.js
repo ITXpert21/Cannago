@@ -29,6 +29,7 @@ export default class SigninDispensariesPage extends Component{
       isLoading: false,
     }; 
   } 
+
   async _storeData(uid) {
     try {
       var userObj = {
