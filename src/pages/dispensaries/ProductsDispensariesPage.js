@@ -7,29 +7,70 @@ import {
   TextInput,
   Image,
   View,
+  TouchableOpacity,
+  ActivityIndicator,
+  AsyncStorage,
+  FlatList,
   Text
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Tabs from '../../components/dispensaries/tab/Tabs';
 import Dialog, { DialogContent } from 'react-native-popup-dialog';
 import { Divider } from 'react-native-elements';
+import productService from '../../services/productService';
+import Spinner from 'react-native-loading-spinner-overlay'; 
 
-import Products from '../../components/dispensaries/product/Products';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class ProductsDispensariesPage extends Component{
-  state = {
-    selectTab: 'product',
-    popupVisible: false
-  };
+
   constructor(props){
     super(props);
+    this.state = {
+      selectTab: 'product',
+      popupVisible: false,
+      isEmptyData : true,
+      uid : '',
+
+    };
   }  
+  UNSAFE_componentWillMount(){
+    AsyncStorage.getItem('userInfo').then((userinfo)=>{
+      this.setState({uid : JSON.parse(userinfo).uid})
+    });  
+  }
+
+  componentDidMount(){
+    productService.getProducts(this.state.uid).then(productsInfo =>{
+      var productlist = [];
+      productsInfo.forEach(function(product){
+        console.log("product val", product.val());
+        productlist.push(product.val());
+      });
+      this.setState({productlist : productlist});
+      this.setState({isEmptyData : false});
+     // console.log("this.state.productlist", this.state.productlist);
+      //this.props.navigation.navigate('ProductCategoryPage')
+    });   
+  }
+
 
   updateSearch = search => {
     this.setState({ search });
   };
   render(){
+    // if(this.state.productlist.length > 0){
+    //   this.setState({isLoading : false});
+    //   this.setState({isEmptyData : false});
+    // }
+    let rating = 3;
+    let stars = [];
+    for (var i = 1; i <= 5; i++) {
+        let path = require('../../assets/imgs/star1.png');
+        if (i > rating) {
+          path = require('../../assets/imgs/star2.png');
+        }
+        stars.push(<Image key={i} style={styles.ratingImage} source={path} />);
+      }       
     return (
       <SafeAreaView style={styles.container}>
         <View style={{alignItems : 'center', width : '100%'}}>
@@ -40,19 +81,100 @@ export default class ProductsDispensariesPage extends Component{
           <TextInput placeholder='Search' placeholder="Search my items" style={styles.searchInputText}/>
           <Icon name="plus"  size={20} color="#37d613" onPress={() => this.props.navigation.navigate('AddProductPage')}/>
         </View>
-
+        <Spinner
+          visible={this.state.isEmptyData}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <ScrollView>
-          <View style={styles.container}>
-            <Products gotoProductDetailPage={() => this.props.navigation.navigate('EditProductPage')}/>
-          </View>
+          {!this.state.isEmptyData &&
+          <FlatList
+            data={this.state.productlist}
+            renderItem={({ item }) => (
+              
+            <View style={styles.productscol}>
+              <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
+                <Text style={styles.pricetext}>$ {item.productPrice}</Text>
+              </View>
+              <TouchableOpacity onPress={this.props.gotoProductDetailPage} style={{width : '100%'}}>
+                  <Image source = {{ uri: item.photo_url }} style={{ height:120}}></Image>
+              </TouchableOpacity>
+              <View style={styles.productfooter} >
+
+            <Text style={styles.footertext}> {item.product_name}</Text>
+                <View style={styles.ratingview}>
+                  {stars}
+                  <Text style={{color : 'white', fontSize : 12}}>, 17 Reviews</Text>                      
+                </View>
+
+                <View style={{marginTop : 5}}>
+                  <Icon name="chevron-circle-right"  size={20} color="white" />
+                </View>
+              </View>                      
+            </View>              
+            )}
+          //Setting the number of column
+          numColumns={2}
+          keyExtractor={(item, index) => index.toString()}
+          />}
+          {/* <View style={styles.container}>
+          <View style={styles.productsrow}>
+            <View style={styles.productscol}>
+              <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
+                <Text style={styles.pricetext}>$ 50.00</Text>
+              </View>
+              <TouchableOpacity onPress={this.props.gotoProductDetailPage}>
+                <View>
+                  <Image source={require('../assets/imgs/product1.png')} style={{height:120}}></Image>
+                </View>
+              </TouchableOpacity>
+
+              <View style={styles.productfooter} >
+
+                <Text style={styles.footertext}> Jone Doe's CBD Oil</Text>
+                <View style={styles.ratingview}>
+                  {stars}
+                  <Text style={{color : 'white', fontSize : 12}}>, 17 Reviews</Text>                      
+                </View>
+
+                <View style={{marginTop : 5}}>
+                  <Icon name="chevron-circle-right"  size={20} color="white" />
+                </View>
+                </View>                      
+              </View>
+              <View style={{width : '10%'}}>
+              </View>      
+
+              <View style={styles.productscol}>
+                <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
+                  <Text style={styles.pricetext}>$ 50.00</Text>
+                </View>
+                <View>
+                  <Image source={require('../assets/imgs/product2.png')} style={{height:120}}></Image>
+                </View>
+                <View style={styles.productfooter}>
+                  <Text style={styles.footertext}> Jone Doe's CBD Oil</Text>
+                  <View style={styles.ratingview}>
+                      {stars}
+
+                      <Text style={{color : 'white', fontSize : 12}}>, 17 Reviews</Text>                      
+                  </View>
+                  <View style={{marginTop : 5}}>
+                      <Icon name="chevron-circle-right"  size={20} color="white" />
+                  </View>
+                </View> 
+              </View>
+            </View>          
+          </View>  */}
         </ScrollView>
         <Tabs 
-          openPopup={() => {this.setState({ popupVisible: true });}}
+          //openPopup={() => {this.setState({ popupVisible: true });}}
           gotoOrderHistoryPage={() => this.props.navigation.navigate('OrderHistoryPage')}
           gotoProfilePage={() => this.props.navigation.navigate('ProfileDispensariesPage')}
           selectTab={this.state.selectTab}
           />
-          <Dialog
+
+          {/* <Dialog
               visible={this.state.popupVisible}
               dialogStyle={{borderTopLeftRadius : 30, borderTopRightRadius : 30}}
               containerStyle={{ justifyContent: 'flex-end'}}
@@ -106,7 +228,7 @@ export default class ProductsDispensariesPage extends Component{
                     </TouchableOpacity>                    
                 </View>
                 </DialogContent>
-          </Dialog>             
+          </Dialog>              */}
       </SafeAreaView>
 
     );
@@ -159,6 +281,60 @@ const styles = StyleSheet.create({
     alignItems : 'center',
     backgroundColor : '#23b825',
     borderRadius : 20
-  }
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
+  },  
+  productsrow : {
+    flexDirection : 'row',
+    alignItems : 'center',
+    justifyContent : 'center',
+    width : '90%',
+    height : 220,
+    marginTop : 30
+
+  },
+  productscol : {
+      flexDirection : 'column',
+      borderColor : '#3cc93f',
+      borderWidth : 1,
+      alignItems : 'center',
+      justifyContent : 'flex-end',
+      width : '40%',
+      height : 220,
+      borderBottomLeftRadius : 20,
+      borderBottomRightRadius : 20,
+      borderTopLeftRadius : 10,
+      margin : 20
+  },
+  pricetext : {
+      color : '#3cc93f',
+      fontSize : 14,
+      justifyContent : 'flex-end'
+  },
+  ratingview : {
+      flexDirection : 'row',
+      justifyContent : 'center',
+      alignItems : 'center',
+      marginTop : 5,
+  },
+  productfooter : {
+      alignItems : 'center',
+      backgroundColor : '#43d162',
+      height : 70,
+      width : '100%',
+      borderBottomLeftRadius : 20,
+      borderBottomRightRadius : 20
+
+  },
+  footertext : {
+      marginTop : 5,
+      color : 'white',
+      fontSize : 16
+  },
+  ratingImage: {
+      height: 15,
+      width: 15,
+  },   
 });
 

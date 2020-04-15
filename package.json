@@ -27,6 +27,7 @@
     "react-native-image-crop-picker": "^0.28.0",
     "react-native-image-picker": "^0.28.0",
     "react-native-input-spinner": "^1.2.8",
+    "react-native-loading-spinner-overlay": "^1.1.0",
     "react-native-nav-tabbar": "0.0.2",
     "react-native-photo-upload": "^1.3.0",
     "react-native-popup-dialog": "^0.18.3",

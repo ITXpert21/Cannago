@@ -11,6 +11,12 @@ class ProductService {
       return addParam;
     }).catch();
   }
+  getProducts(uid){
+    var ref = Firebase.database().ref('products');
+    return ref.once("value").then((snapshot) => {
+      return snapshot;
+    }).catch(err=> console.log(err));
+  }  
  
 }
 const productService = new ProductService();

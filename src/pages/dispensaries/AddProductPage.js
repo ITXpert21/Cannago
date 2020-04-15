@@ -20,7 +20,7 @@ import Textarea from 'react-native-textarea';
 import ImagePicker from 'react-native-image-picker';
 import productService from '../../services/productService';
 import Toast from 'react-native-simple-toast';
-import Firebase from '../../config/firebase'
+import Firebase from '../../config/firebase';
 import RNFetchBlob from 'react-native-fetch-blob';
 
 // Prepare Blob support
@@ -115,6 +115,7 @@ export default class AddProductPage extends Component{
     }  
     this.setState({ isLoading: true });
     let addparam = {
+      product_name : this.state.product_name,
       productPrice: this.state.productPrice,
       product_description : this.state.product_description,
       product_tags : this.state.product_tags,
@@ -127,7 +128,7 @@ export default class AddProductPage extends Component{
     if(this.state.photoUri == ''){
       productService.registerProduct(addparam).then(response =>{
         this.setState({isLoading: false});
-        //this.props.navigation.navigate('ProductCategoryPage')
+        this.props.navigation.navigate('ProductsDispensariesPage')
       });   
     }else{
         this.uploadImage(this.state.photoUri)
@@ -135,7 +136,7 @@ export default class AddProductPage extends Component{
           addparam.photo_url = url;
           productService.registerProduct(addparam).then(response =>{
             this.setState({isLoading: false, });
-            this.props.navigation.navigate('ProductsDispensariesPage')
+            this.props.navigation.navigate('ProductsDispensariesPage');
           })
         }).catch(error => console.log(error));
         //
