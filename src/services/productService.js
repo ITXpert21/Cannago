@@ -11,6 +11,14 @@ class ProductService {
       return addParam;
     }).catch();
   }
+
+  updateProduct(addParam){
+console.log("addparam", addParam);
+    let productRef = Firebase.database().ref('products/' + addParam.productId);
+    return productRef.set(addParam).then((res)=>{
+      return addParam;
+    }).catch();
+  }  
   getProducts(uid){
     var ref = Firebase.database().ref('products');
     return ref.once("value").then((snapshot) => {

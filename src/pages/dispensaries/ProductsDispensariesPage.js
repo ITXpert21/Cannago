@@ -22,13 +22,13 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 
 export default class ProductsDispensariesPage extends Component{
-
+  subs = [];
   constructor(props){
     super(props);
     this.state = {
       selectTab: 'product',
       popupVisible: false,
-      isEmptyData : true,
+      isEmptyData : false,
       uid : '',
 
     };
@@ -37,22 +37,39 @@ export default class ProductsDispensariesPage extends Component{
     AsyncStorage.getItem('userInfo').then((userinfo)=>{
       this.setState({uid : JSON.parse(userinfo).uid})
     });  
+    this.getProducts();
   }
 
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());  
+  }
   componentDidMount(){
+    this.subs = [
+      this.props.navigation.addListener("didFocus", () => {
+        console.log("1111111111111");
+        this.getProducts();
+      }),
+      this.props.navigation.addListener("willBlur", () => {
+        console.log("22222222222")
+      })
+    ];
+  }
+  getProducts = () =>{
+    this.setState({isEmptyData : true});
     productService.getProducts(this.state.uid).then(productsInfo =>{
       var productlist = [];
       productsInfo.forEach(function(product){
-        console.log("product val", product.val());
         productlist.push(product.val());
       });
       this.setState({productlist : productlist});
       this.setState({isEmptyData : false});
-     // console.log("this.state.productlist", this.state.productlist);
-      //this.props.navigation.navigate('ProductCategoryPage')
-    });   
+    });  
   }
+  editProduct = (product) => {
+    let navParam = product;
 
+    this.props.navigation.navigate('EditProductPage', { navParam });
+  }
 
   updateSearch = search => {
     this.setState({ search });
@@ -81,11 +98,10 @@ export default class ProductsDispensariesPage extends Component{
           <TextInput placeholder='Search' placeholder="Search my items" style={styles.searchInputText}/>
           <Icon name="plus"  size={20} color="#37d613" onPress={() => this.props.navigation.navigate('AddProductPage')}/>
         </View>
-        <Spinner
-          visible={this.state.isEmptyData}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
+
+            {this.state.isEmptyData &&
+              <ActivityIndicator size="large" color="#9E9E9E"/>
+            }  
         <ScrollView>
           {!this.state.isEmptyData &&
           <FlatList
@@ -96,7 +112,7 @@ export default class ProductsDispensariesPage extends Component{
               <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
                 <Text style={styles.pricetext}>$ {item.productPrice}</Text>
               </View>
-              <TouchableOpacity onPress={this.props.gotoProductDetailPage} style={{width : '100%'}}>
+              <TouchableOpacity onPress={()=> this.editProduct(item)} style={{width : '100%'}}>
                   <Image source = {{ uri: item.photo_url }} style={{ height:120}}></Image>
               </TouchableOpacity>
               <View style={styles.productfooter} >
@@ -117,55 +133,6 @@ export default class ProductsDispensariesPage extends Component{
           numColumns={2}
           keyExtractor={(item, index) => index.toString()}
           />}
-          {/* <View style={styles.container}>
-          <View style={styles.productsrow}>
-            <View style={styles.productscol}>
-              <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
-                <Text style={styles.pricetext}>$ 50.00</Text>
-              </View>
-              <TouchableOpacity onPress={this.props.gotoProductDetailPage}>
-                <View>
-                  <Image source={require('../assets/imgs/product1.png')} style={{height:120}}></Image>
-                </View>
-              </TouchableOpacity>
-
-              <View style={styles.productfooter} >
-
-                <Text style={styles.footertext}> Jone Doe's CBD Oil</Text>
-                <View style={styles.ratingview}>
-                  {stars}
-                  <Text style={{color : 'white', fontSize : 12}}>, 17 Reviews</Text>                      
-                </View>
-
-                <View style={{marginTop : 5}}>
-                  <Icon name="chevron-circle-right"  size={20} color="white" />
-                </View>
-                </View>                      
-              </View>
-              <View style={{width : '10%'}}>
-              </View>      
-
-              <View style={styles.productscol}>
-                <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
-                  <Text style={styles.pricetext}>$ 50.00</Text>
-                </View>
-                <View>
-                  <Image source={require('../assets/imgs/product2.png')} style={{height:120}}></Image>
-                </View>
-                <View style={styles.productfooter}>
-                  <Text style={styles.footertext}> Jone Doe's CBD Oil</Text>
-                  <View style={styles.ratingview}>
-                      {stars}
-
-                      <Text style={{color : 'white', fontSize : 12}}>, 17 Reviews</Text>                      
-                  </View>
-                  <View style={{marginTop : 5}}>
-                      <Icon name="chevron-circle-right"  size={20} color="white" />
-                  </View>
-                </View> 
-              </View>
-            </View>          
-          </View>  */}
         </ScrollView>
         <Tabs 
           //openPopup={() => {this.setState({ popupVisible: true });}}

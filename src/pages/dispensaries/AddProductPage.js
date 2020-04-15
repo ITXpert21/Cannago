@@ -14,7 +14,6 @@ import {
 
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
-import Tabs from '../../components/dispensaries/tab/Tabs';
 import InputSpinner from 'react-native-input-spinner';
 import Textarea from 'react-native-textarea';
 import ImagePicker from 'react-native-image-picker';
@@ -66,7 +65,6 @@ export default class AddProductPage extends Component{
     let productPrice = parseFloat(text);
     let ourfee = productPrice * 0.3;
     let grossprice = productPrice + ourfee;
-    console.log("product price", text);
     this.setState({productPrice:productPrice});
     this.setState({ourfee:ourfee});
     this.setState({grossprice:grossprice});
@@ -209,7 +207,7 @@ export default class AddProductPage extends Component{
                   height={30}
                   width={100}
                   style={{margin : 5}}
-                  onChange={(product_quantity)=>this.setState({product_quantity})} />   
+                  onChange={(num)=>{this.setState({product_quantity : num})}} />   
               </View>   
               <View style={{flexDirection : 'row', alignItems : 'center', justifyContent : 'center',  width : '100%'}}>
                 <View style={{alignItems : 'center', justifyContent : 'center', margin : 5, width : '25%'}}> 
