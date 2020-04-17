@@ -113,7 +113,7 @@ export default class ProductsDispensariesPage extends Component{
                 <Text style={styles.pricetext}>$ {item.productPrice}</Text>
               </View>
               <TouchableOpacity onPress={()=> this.editProduct(item)} style={{width : '100%'}}>
-                  <Image source = {{ uri: item.photo_url }} style={{ height:120}}></Image>
+                <Image source = {{ uri: item.photo_url }} style={{ height:120}}></Image>
               </TouchableOpacity>
               <View style={styles.productfooter} >
 

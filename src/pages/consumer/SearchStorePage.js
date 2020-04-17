@@ -10,7 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Tabs from '../../components/consumer/tab/Tabs';
-import Category from '../../components/consumer/product/Category';
+// import Category from '../../components/consumer/product/Category';
 
 import { TextInput } from 'react-native-gesture-handler';
 
@@ -31,7 +31,7 @@ export default class SearchStorePage extends Component{
             <Icon name="plus"  size={20} color="#37d613" onPress={() => this.props.navigation.navigate('SearchFilterPage')}/>
           </View>
           <Text style={{marginLeft : 30, fontSize : 20}}>Result: 5 Stores</Text>
-          <Category />
+          {/* <Category /> */}
 
         </ScrollView>
         <Tabs 

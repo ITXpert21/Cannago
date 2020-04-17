@@ -4,25 +4,68 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  View
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  AsyncStorage,
+  FlatList,
+  Image,
+  Text,
+  TextInput
 } from 'react-native';
 import { SearchBar} from 'react-native-elements';
 import Tabs from '../../components/consumer/tab/Tabs';
+import productService from '../../services/productService';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Products from '../../components/consumer/product/Products';
 
 export default class ProductsPage extends Component{
-  state = {
-    selectTab: 'none'
-  };
+
   constructor(props){
     super(props);
+    this.  state = {
+      selectTab: 'none',
+      isEmptyData : false,
+      dispensary_uid : ''
+  
+    };
   }  
+  UNSAFE_componentWillMount(){
+    let dispensary_uid = this.props.navigation.state.params.navParam.dispensary_uid;
+
+    this.getProducts(dispensary_uid);
+  }
 
   updateSearch = search => {
     this.setState({ search });
   };
+
+  getProducts = (dispensary_uid) =>{
+    this.setState({isEmptyData : true});
+    productService.getProductsByDispensary(dispensary_uid).then(productsInfo =>{
+      var productlist = [];
+      productsInfo.forEach(function(product){
+
+        productlist.push(product.val());
+      });
+      console.log("product 33333333333", productlist);
+
+      this.setState({productlist : productlist});
+      this.setState({isEmptyData : false});
+      console.log("product info12121212121212", this.state.productlist);
+    });  
+  }  
+
   render(){
+    let rating = 3;
+    let stars = [];
+    for (var i = 1; i <= 5; i++) {
+        let path = require('../../assets/imgs/star1.png');
+        if (i > rating) {
+          path = require('../../assets/imgs/star2.png');
+        }
+        stars.push(<Image key={i} style={styles.ratingImage} source={path} />);
+      }    
     return (
       <SafeAreaView style={styles.container}>
           <SearchBar
@@ -34,7 +77,36 @@ export default class ProductsPage extends Component{
           />
         <ScrollView>
           <View style={styles.container}>
-            <Products gotoProductDetailPage={() => this.props.navigation.navigate('ProductDetailPage')}/>
+          {!this.state.isEmptyData &&
+          <FlatList
+            data={this.state.productlist}
+            renderItem={({ item }) => (
+              
+            <View style={styles.productscol}>
+              <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
+                <Text style={styles.pricetext}>$ {item.productPrice.toString()}</Text>
+              </View>
+              <TouchableOpacity onPress={()=> this.editProduct(item)} style={{width : '100%'}}>
+                <Image source = {{ uri: item.photo_url }} style={{ height:120}}></Image>
+              </TouchableOpacity>
+              <View style={styles.productfooter} >
+
+                <Text style={styles.footertext}> {item.product_name}</Text>
+                <View style={styles.ratingview}>
+                  {stars}
+                  <Text style={{color : 'white', fontSize : 12}}>, 17 Reviews</Text>                      
+                </View>
+
+                <View style={{marginTop : 5}}>
+                  <Icon name="chevron-circle-right"  size={20} color="white" />
+                </View>
+              </View>                      
+            </View>              
+            )}
+          //Setting the number of column
+          numColumns={2}
+          keyExtractor={(item, index) => index.toString()}
+          />}          
           </View>
         </ScrollView>
         <Tabs 
@@ -62,6 +134,56 @@ const styles = StyleSheet.create({
     marginTop : 20,
     marginRight : 20,
     borderRadius : 10,
-   }
+   },
+   productsrow : {
+    flexDirection : 'row',
+    alignItems : 'center',
+    justifyContent : 'center',
+    width : '90%',
+    height : 220,
+    marginTop : 30
+
+  },
+  productscol : {
+      flexDirection : 'column',
+      borderColor : '#3cc93f',
+      borderWidth : 1,
+      alignItems : 'center',
+      justifyContent : 'flex-end',
+      width : '45%',
+      height : 220,
+      borderBottomLeftRadius : 20,
+      borderBottomRightRadius : 20,
+      borderTopLeftRadius : 10
+  },
+  pricetext : {
+      color : '#3cc93f',
+      fontSize : 14,
+      justifyContent : 'flex-end'
+  },
+  ratingview : {
+      flexDirection : 'row',
+      justifyContent : 'center',
+      alignItems : 'center',
+      marginTop : 5,
+  },
+  productfooter : {
+      alignItems : 'center',
+      backgroundColor : '#43d162',
+      height : 70,
+      width : '100%',
+      borderBottomLeftRadius : 20,
+      borderBottomRightRadius : 20
+
+  },
+  footertext : {
+      marginTop : 5,
+      color : 'white',
+      fontSize : 14
+  },
+  ratingImage: {
+      height: 15,
+      width: 15,
+  }, 
 });
 
