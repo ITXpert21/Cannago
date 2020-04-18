@@ -46,11 +46,9 @@ export default class ProductsDispensariesPage extends Component{
   componentDidMount(){
     this.subs = [
       this.props.navigation.addListener("didFocus", () => {
-        console.log("1111111111111");
         this.getProducts();
       }),
       this.props.navigation.addListener("willBlur", () => {
-        console.log("22222222222")
       })
     ];
   }

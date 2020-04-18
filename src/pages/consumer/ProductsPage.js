@@ -45,17 +45,17 @@ export default class ProductsPage extends Component{
     productService.getProductsByDispensary(dispensary_uid).then(productsInfo =>{
       var productlist = [];
       productsInfo.forEach(function(product){
-
         productlist.push(product.val());
       });
-      console.log("product 33333333333", productlist);
-
       this.setState({productlist : productlist});
       this.setState({isEmptyData : false});
-      console.log("product info12121212121212", this.state.productlist);
     });  
   }  
+  detailProduct = (product) => {
+    let navParam = product;
 
+    this.props.navigation.navigate('ProductDetailPage', { navParam });
+  }
   render(){
     let rating = 3;
     let stars = [];
@@ -76,6 +76,9 @@ export default class ProductsPage extends Component{
             value={this.state.search}
           />
         <ScrollView>
+        {this.state.isEmptyData &&
+              <ActivityIndicator size="large" color="#9E9E9E"/>
+          }  
           <View style={styles.container}>
           {!this.state.isEmptyData &&
           <FlatList
@@ -86,7 +89,7 @@ export default class ProductsPage extends Component{
               <View style={{flexDirection : 'row', justifyContent : 'flex-end', width:'90%'}}>
                 <Text style={styles.pricetext}>$ {item.productPrice.toString()}</Text>
               </View>
-              <TouchableOpacity onPress={()=> this.editProduct(item)} style={{width : '100%'}}>
+              <TouchableOpacity onPress={()=> this.detailProduct(item)} style={{width : '100%'}}>
                 <Image source = {{ uri: item.photo_url }} style={{ height:120}}></Image>
               </TouchableOpacity>
               <View style={styles.productfooter} >
@@ -110,7 +113,7 @@ export default class ProductsPage extends Component{
           </View>
         </ScrollView>
         <Tabs 
-          gotoAddNewCartPage={() => this.props.navigation.navigate('AddNewCartPage')}
+          gotoAddNewCartPage={() => this.props.navigation.navigate('CartPage')}
           gotoProductCategoryPage={() => this.props.navigation.navigate('ProductCategoryPage')}
           gotoProfilePage={() => this.props.navigation.navigate('ProfilePage')}
           gotoSearchStorePage={() => this.props.navigation.navigate('SearchStorePage')}
@@ -150,11 +153,12 @@ const styles = StyleSheet.create({
       borderWidth : 1,
       alignItems : 'center',
       justifyContent : 'flex-end',
-      width : '45%',
+      width : '40%',
       height : 220,
       borderBottomLeftRadius : 20,
       borderBottomRightRadius : 20,
-      borderTopLeftRadius : 10
+      borderTopLeftRadius : 10,
+      margin : 20
   },
   pricetext : {
       color : '#3cc93f',
