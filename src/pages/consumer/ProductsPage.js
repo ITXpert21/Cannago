@@ -76,9 +76,9 @@ export default class ProductsPage extends Component{
             value={this.state.search}
           />
         <ScrollView>
-        {this.state.isEmptyData &&
+        {/* {this.state.isEmptyData &&
               <ActivityIndicator size="large" color="#9E9E9E"/>
-          }  
+          }   */}
           <View style={styles.container}>
           {!this.state.isEmptyData &&
           <FlatList

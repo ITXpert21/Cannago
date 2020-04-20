@@ -29,9 +29,9 @@ export default class ProductDetailPage extends Component{
 
   UNSAFE_componentWillMount(){
     let productInfo = this.props.navigation.state.params.navParam;
+    productInfo.buyQuantity = 1;
     this.setState(productInfo);
     this.setState({productInfo : productInfo});
-
     AsyncStorage.getItem('userInfo').then((userinfo)=>{
       this.setState({uid : JSON.parse(userinfo).uid})
     }); 
@@ -54,7 +54,6 @@ export default class ProductDetailPage extends Component{
       let addParam = {
         products : productlist,
         cart_uid : this.state.uid,
-        buyQuantity : 0,
         paidDate : '',
         cartId : cartId,
         status : 'progressing'
