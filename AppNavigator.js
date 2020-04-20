@@ -8,7 +8,6 @@ import ProductsPage from './src/pages/consumer/ProductsPage';
 import ProductDetailPage from './src/pages/consumer/ProductDetailPage';
 import CartPage from './src/pages/consumer/CartPage';
 import CheckoutPage from './src/pages/consumer/CheckoutPage';
-import AddNewCartPage from './src/pages/consumer/AddNewCartPage';
 import TrackingPage from './src/pages/consumer/TrackingPage';
 import ReportPage from './src/pages/consumer/ReportPage';
 import RatePage from './src/pages/consumer/RatePage';
@@ -83,13 +82,7 @@ const RootStack = createStackNavigator({
       
     }
   },    
-  "AddNewCartPage": { 
-    screen: AddNewCartPage,
-    navigationOptions: {
-      title: 'Cart',
-      headerShown : false
-    }
-  },   
+ 
   "CheckoutPage": { 
     screen: CheckoutPage,
     navigationOptions: {

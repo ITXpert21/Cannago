@@ -124,7 +124,7 @@ export  default class ProductCategoryPage extends Component{
           </View>
         </ScrollView>
         <Tabs 
-          gotoAddNewCartPage={() => this.props.navigation.navigate('AddNewCartPage')}
+          gotoAddNewCartPage={() => this.props.navigation.navigate('CartPage')}
           gotoProductCategoryPage={() => this.props.navigation.navigate('ProductCategoryPage')}
           gotoProfilePage={() => this.props.navigation.navigate('ProfilePage')}
           gotoSearchStorePage={() => this.props.navigation.navigate('SearchStorePage')}
