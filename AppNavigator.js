@@ -36,6 +36,7 @@ import DriverInfoPage from './src/pages/driver/DriverInfoPage';
 import TrackingDriverPage from './src/pages/driver/TrackingDriverPage';
 import DriverHistoryPage from './src/pages/driver/DriverHistoryPage';
 
+
 const RootStack = createStackNavigator({
 
   // for consumer pages---
@@ -255,7 +256,7 @@ const RootStack = createStackNavigator({
       title: 'driver history',
       headerShown : false
     }
-  },    
+  }    
 });
 const AppNavigator = createAppContainer(RootStack);
 export default AppNavigator;

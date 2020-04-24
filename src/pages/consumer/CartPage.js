@@ -44,16 +44,20 @@ export default class CartPage extends Component{
     this.setState({isEmptyData : true});
     cartService.getProductsInCart(this.state.uid).then(carts =>{
       var productlist = [];
+      var cartlist = [];
       var cartId = '';
       if(carts != null){
         carts.forEach(function(cart){
           if(cart.val().status == "progressing"){
             productlist = cart.val().products;
             cartId = cart.val().cartId;
+            cartlist.push(cart.val());
           }
         });
         if(cartId != ''){
           this.setState({productlist : productlist});
+          this.setState({cartlist : cartlist});
+
           this.setState({cartId : cartId});
           this.setState({isEmptyData : false});
           this.setState({isShowAddPage : false});
@@ -73,18 +77,24 @@ export default class CartPage extends Component{
     this.setState({isUpdateingCart : true});
     cartService.updateCart(this.state.productlist, this.state.cartId).then(result=>{
       this.setState({isUpdateingCart : false});
+      let navParam = {
+        productlist : result,
+        cartId : this.state.cartId,
+        cartlist : this.state.cartlist
+      };
+      this.props.navigation.navigate('CheckoutPage', { navParam });
     });
   }
   render(){
     return (
       <SafeAreaView style={{flex : 1, justifyContent : 'flex-end'}}>
         <View style={{flexDirection : 'row', width : '100%', height : screenHeight * 1 / 12}}>
-          {/* <TouchableOpacity style={styles.backBtnView} onPress={() => this.props.navigation.navigate('CheckoutPage')}>
+          <TouchableOpacity style={styles.backBtnView} onPress={() => this.props.navigation.navigate('CheckoutPage')}>
             <Icon name="arrow-left"  size={30} color="white"/>
-          </TouchableOpacity>         */}
-          {/* <View style={styles.pageTitle}>
+          </TouchableOpacity>        
+          <View style={styles.pageTitle}>
             <Text style={{fontSize : 22}}>Cart</Text>
-          </View>         */}
+          </View>        
         </View>
         {this.state.isEmptyData &&
           <ActivityIndicator size="large" color="#9E9E9E"/>
@@ -199,7 +209,7 @@ const styles = StyleSheet.create({
       flexDirection : 'row'
     },
     pageTitle : {
-      width : '100%',
+      width : '60%',
       height : screenHeight * 1 / 24,
       alignItems : 'center',
       justifyContent : 'center',

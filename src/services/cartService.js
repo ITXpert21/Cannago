@@ -20,13 +20,20 @@ class CartService {
   updateCart(productlist, cartId){
     let cartRef = Firebase.database().ref('carts/' + cartId + '/products') ;
     return cartRef.set(productlist).then((res)=>{
-      return res;
+      return productlist;
     }).catch();
   }
   updateProduct(addParam){
     let productRef = Firebase.database().ref('products/' + addParam.productId);
     return productRef.set(addParam).then((res)=>{
       return addParam;
+    }).catch();
+  }  
+  
+  updateCheckOutStatus(param){
+    let cartRef = Firebase.database().ref('carts/' + param.cartId ) ;
+    return cartRef.set(param).then((res)=>{
+      return param;
     }).catch();
   }  
   getProducts(uid){

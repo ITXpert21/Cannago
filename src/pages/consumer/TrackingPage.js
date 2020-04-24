@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 
 import Tabs from '../../components/consumer/tab/Tabs';
+import MapView, { Marker,  PROVIDER_GOOGLE } from 'react-native-maps';
+const { width, height } = Dimensions.get('window');
+
 
 export default class TrackingPage extends Component{
 
@@ -24,6 +27,17 @@ export default class TrackingPage extends Component{
   render(){
     return (
       <SafeAreaView style={{flex : 1, justifyContent : 'flex-end'}}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+        
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
         <TouchableOpacity onPress={() => this.props.navigation.navigate('RatePage')}>
           <View style={styles.trackingview}>
             <Image source={require('../../components/consumer/assets/imgs/pinmap.png')} ></Image> 
@@ -31,9 +45,9 @@ export default class TrackingPage extends Component{
             <Text style={{fontSize : 22, fontWeight : '400', marginTop : 5}}>Distance</Text>
             <Text style={{fontSize : 16, fontWeight : '300', marginTop : 5}}>Estimated Time of Arrival 5:23 pm</Text>
             <Text style={{fontSize : 16, fontWeight : '300', marginTop : 5}}>Honda Civic | Black | Plate GFQ1FT</Text>
-
           </View>
         </TouchableOpacity>
+
 
         <Tabs 
           gotoReportPage={() => this.props.navigation.navigate('ReportPage')}
@@ -78,6 +92,11 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.9,
       elevation: 10, 
       margin : 30 
-  }
+  },
+  map: {
+    marginTop : 10,
+    width : width,
+    height : screenHeight * 5/6
+  },
 });
 

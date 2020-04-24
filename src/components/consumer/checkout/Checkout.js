@@ -87,9 +87,9 @@ export default class Checkout extends Component{
                 />  
           </View>   
           <TouchableOpacity onPress={this.props.gotoTrackingPage}>
-                <View style={styles.addcart}>
-                    <Text style={styles.addcarttext}>Check Out</Text>
-                </View>
+            <View style={styles.addcart}>
+                <Text style={styles.addcarttext}>Check Out</Text>
+            </View>
             </TouchableOpacity>                   
         </View>
     );
