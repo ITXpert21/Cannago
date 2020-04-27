@@ -213,7 +213,13 @@ export default class SignupDispensariesPage extends Component{
     })
   };
 
-
+  async _storeData(userParam) {
+    try {
+     await AsyncStorage.setItem('userInfo', JSON.stringify(userParam));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   render(){
     return (
       <SafeAreaView style={styles.container}>

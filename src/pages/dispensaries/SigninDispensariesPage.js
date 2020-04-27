@@ -54,7 +54,7 @@ export default class SigninDispensariesPage extends Component{
       .then((res) => {
         this.setState({isLoading: false});
         this._storeData(res.user.uid);
-        this.props.navigation.navigate('ProductsDispensariesPage')
+        this.props.navigation.navigate('ProductsDispensariesPage');
       })
       .catch((error) => {
         this.setState({isLoading: false});

@@ -6,7 +6,8 @@
  */
 
 #import "AppDelegate.h"
-
+#import "Firebase.h"
+#import "FirebasePushNotifications.h"
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -16,8 +17,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
    //[GMSServices provideAPIKey:@"AIzaSyDUNefWU4FzLHhoSaS7Wyb-VE2LvNDf3bs"];
-    [GMSServices provideAPIKey:@"AIzaSyByjIkAL7TPK8ht4aZmwlQouF4sScY3LwA"];
-
+  [GMSServices provideAPIKey:@"AIzaSyByjIkAL7TPK8ht4aZmwlQouF4sScY3LwA"];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"Cannago"
@@ -31,6 +31,7 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [FIRApp configure];
+  [FirebasePushNotifications configure];
   return YES;
 }
 

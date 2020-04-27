@@ -23,6 +23,19 @@ class UserService {
       return addParam;
     }).catch();
   }  
+
+  registerDriver(addParam){
+
+    const newDriverRef = Firebase.database().ref().child('drivers').push();
+
+    const newDriverKey = newDriverRef.key;
+    addParam.driverId = newDriverKey;
+    
+    let driverRef = Firebase.database().ref('drivers/' + newDriverKey);
+    return driverRef.set(addParam).then((res)=>{
+      return addParam;
+    }).catch();
+  }    
 }
 const userService = new UserService();
 export default userService;  

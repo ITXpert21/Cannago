@@ -25,10 +25,10 @@ import Firebase from '../../config/firebase';
 import RNFetchBlob from 'react-native-fetch-blob'
 // import ImagePicker from 'react-native-image-crop-picker';
 const licenseKey = Platform.select({
-    // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
-    ios: 'sRwAAAEbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2dDpWAgbXAyPGVFY7cyIZFNWfk/lLQDZc4vYrOA6LwO/RNwHTS7ug+/oUSXeBafqpdlCAyBGzFWNMRhzW16v4O0NFF3ppHV6aGE+uodCBweQiysPu14w2zDzOZQWtT3DTb2N0hI9zbtxu1oWnv0QfRSS4hpZ69C33BiJKawPg46pHweeF/u2j+wttal8QQKVzEUtpmeJy1w3uEEBNrUWF/b6VF2KGfdU0dv9Ay1jMTR+ix+y/FAPfj/lCYSHj+2DORrx6PTd/tIT+TfBw',
-    // android license key for applicationID: com.blinkidreactnative
-    android: 'sRwAAAAbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2Smx+Aa0uoDFwpY2fpht5igmlM8eEyyeTDBGCBXmuVFjafsI1SNFFFCd3gGOjUFynbmqs5P/fqH7ayQ82u+vQ5weDFF9FunxYMy2y/+HFNDrAiExc6R0ZQdeyEIycV0QQGk/BGFsCqzdZ55LVsEM/OGUImr2Wdw6Hx5fW2cibGY9KCwPcYd732Cy6AlK+uMHKqEfwRLZvlfyJyp7J2CFIPqXmFqa/H0fKj483VfLppBltLA1FOk1UdrHKZaPkjPcvgnEVUFRKfRyn4JN3'
+  // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
+  ios: 'sRwAAAEbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2dDpWAgbXAyPGVFY7d9K7vU3S/Bz3sWPS2/9SVuwSe7zWUbUiTBvttlolYjKiQGXsKTi7v7Nrd4GCzKduEje2e2Kl0UKYRPaB6HJxGCrBn2GmFRrT7In12dU7K1ZuFXIwhp78tKxMU0FmgWd5xN/R/NZIRGgKtKTlmYjK8xF42oypkXwUHg6Os5SYLtwkIGqYfXaUyCQg5R1o/tK4sAykUdU4Vbzc/R2nEDwqdwVdxf7WbBOnIqjgKy1uHsk5WzUToQfJG+Gq3ptdbOs1MWhX',
+  // android license key for applicationID: com.blinkidreactnative
+  android: 'sRwAAAAbY29tLmNhbm5hZ29hcHAuY2FubmFncm93ZGV2Smx+Aa0uoDFwpY2fouvbI6e6UbS50wdF3h+s0PFw8HPKMeTzmqydvUHi5yA24jg9Ivk029Oo7JyV74PZAPL3DRSc4Bg8avOT7glbyadUKZiENiB2Gpew+18TuRyB66xcF+XAUQbcbvfiN6xtpOEyrvhuN2p0d9OisP94nkepfMXJIdluKFdWEexQ+5P+XIK/0Z2O7xX3a7FM3nePR9ZdFZXnTEkKuzYwrq2q4AZvLPqPg1/dTvECYghdryG/Aa3JV52mYp8FlwE0t8bIWlgc'
 });
 
 var renderIf = function(condition, content) {
@@ -64,7 +64,7 @@ export default class SignupPage extends Component{
         isLoading: false,
         isToast : false,
         uploading : false
-    };      
+    };    
   } 
   chooseFile = () => {
     var options = {
@@ -134,6 +134,10 @@ export default class SignupPage extends Component{
   };
 
    registerUser() {
+    if(this.state.first_name == ''){
+      Toast.showWithGravity('Please try to scan  license card.', Toast.SHORT , Toast.TOP);
+      return;
+    }
 
     if(this.state.email == ''){
       Toast.showWithGravity('Please insert email.', Toast.SHORT , Toast.TOP);
@@ -203,27 +207,27 @@ export default class SignupPage extends Component{
   async scan() {
     console.log("scam startomg");
     try {
-    
-        var blinkIdCombinedRecognizer = new BlinkIDReactNative.BlinkIdCombinedRecognizer();
-        blinkIdCombinedRecognizer.returnFullDocumentImage = true;
-        blinkIdCombinedRecognizer.returnFaceImage = true;
-    
-        const scanningResults = await BlinkIDReactNative.BlinkID.scanWithCamera(
-            new BlinkIDReactNative.BlinkIdOverlaySettings(),
-            new BlinkIDReactNative.RecognizerCollection([blinkIdCombinedRecognizer/*, mrtdSuccessFrameGrabber*/]),
-            licenseKey
-        );
-    
-        if (scanningResults) {
-            for (let i = 0; i < scanningResults.length; ++i) {
-                this.setState({first_name : scanningResults[0].firstName});
+      var blinkIdCombinedRecognizer = new BlinkIDReactNative.BlinkIdCombinedRecognizer();
+      blinkIdCombinedRecognizer.returnFullDocumentImage = true;
+      blinkIdCombinedRecognizer.returnFaceImage = true;
+  
+      const scanningResults = await BlinkIDReactNative.BlinkID.scanWithCamera(
+          new BlinkIDReactNative.BlinkIdOverlaySettings(),
+          new BlinkIDReactNative.RecognizerCollection([blinkIdCombinedRecognizer/*, mrtdSuccessFrameGrabber*/]),
+          licenseKey
+      );
+  
+      if (scanningResults) {
+          for (let i = 0; i < scanningResults.length; ++i) {
+              this.setState({first_name : scanningResults[0].firstName});
+              if(scanningResults[0].last_name == undefined)
+                this.setState({last_name : ''});
+              else
                 this.setState({last_name : scanningResults[0].last_name});
-                this.setState({license_number : scanningResults[0].documentNumber});
-                this.setState({address : scanningResults[0].address});
-            
-            }
-        }
-
+              this.setState({license_number : scanningResults[0].documentNumber});
+              this.setState({address : scanningResults[0].address});
+          }
+      }
     } catch (error) {
                 console.log(error);
     }
