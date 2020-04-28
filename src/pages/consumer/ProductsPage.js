@@ -26,13 +26,17 @@ export default class ProductsPage extends Component{
     this.  state = {
       selectTab: 'none',
       isEmptyData : false,
-      dispensary_uid : ''
+      dispensary_uid : '',
+      dispensaryId : ''
   
     };
   }  
   UNSAFE_componentWillMount(){
-    let dispensary_uid = this.props.navigation.state.params.navParam.dispensary_uid;
-
+    let dispensary_uid = this.props.navigation.state.params.navParam.dispensary.uid;
+    let dispensaryId = this.props.navigation.state.params.navParam.dispensary.dispensaryId;
+    let dispensaryToken = this.props.navigation.state.params.navParam.dispensary.token;
+    this.setState({dispensaryId : dispensaryId});
+    this.setState({dispensaryToken : dispensaryToken});
     this.getProducts(dispensary_uid);
   }
 
@@ -52,8 +56,11 @@ export default class ProductsPage extends Component{
     });  
   }  
   detailProduct = (product) => {
-    let navParam = product;
-
+    let navParam = {
+      product : product,
+      dispensaryId : this.state.dispensaryId,
+      dispensaryToken : this.state.dispensaryToken
+    };
     this.props.navigation.navigate('ProductDetailPage', { navParam });
   }
   render(){

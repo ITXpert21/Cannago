@@ -35,7 +35,7 @@ export default class ProductsDispensariesPage extends Component{
   }  
   UNSAFE_componentWillMount(){
     AsyncStorage.getItem('userInfo').then((userinfo)=>{
-      this.setState({uid : JSON.parse(userinfo).uid})
+      this.setState({uid : JSON.parse(userinfo).uid});
     });  
     this.getProducts();
   }

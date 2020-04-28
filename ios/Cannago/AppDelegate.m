@@ -12,12 +12,13 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "RNFirebaseMessaging.h"
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
    //[GMSServices provideAPIKey:@"AIzaSyDUNefWU4FzLHhoSaS7Wyb-VE2LvNDf3bs"];
-  [GMSServices provideAPIKey:@"AIzaSyByjIkAL7TPK8ht4aZmwlQouF4sScY3LwA"];
+  [GMSServices provideAPIKey:@"AIzaSyB8nm4Avunu0rENuo2tpWgV8jKUKLFbESw"];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"Cannago"
@@ -34,7 +35,17 @@
   [FirebasePushNotifications configure];
   return YES;
 }
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+[[FirebasePushNotifications instance] didReceiveLocalNotification:notification];
+}
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo
+                                                    fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+[[FirebasePushNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
 
+[[RNFirebaseMessaging instance] didRegisterUserNotificationSettings:notificationSettings];
+}
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG

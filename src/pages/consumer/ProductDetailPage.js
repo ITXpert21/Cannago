@@ -16,6 +16,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { ListItem} from 'react-native-elements';
 import cartService from '../../services/cartService';
+import { notifications } from "react-native-firebase-push-notifications";
 
 export default class ProductDetailPage extends Component{
 
@@ -28,15 +29,22 @@ export default class ProductDetailPage extends Component{
   } 
 
   UNSAFE_componentWillMount(){
-    let productInfo = this.props.navigation.state.params.navParam;
+    let productInfo = this.props.navigation.state.params.navParam.product;
+    let dispensaryId = this.props.navigation.state.params.navParam.dispensaryId;
+    let dispensaryToken = this.props.navigation.state.params.navParam.dispensaryToken;
+
     productInfo.buyQuantity = 1;
     this.setState(productInfo);
     this.setState({productInfo : productInfo});
+    this.setState({dispensaryId : dispensaryId});
+    this.setState({dispensaryToken : dispensaryToken});
+
     AsyncStorage.getItem('userInfo').then((userinfo)=>{
       this.setState({uid : JSON.parse(userinfo).uid})
     }); 
   }
-  addToCart() {
+  async addToCart() {
+
     this.setState({isAdding : true});
     cartService.getProductsInCart(this.state.uid).then(carts =>{
       var productlist = [];
@@ -56,7 +64,9 @@ export default class ProductDetailPage extends Component{
         cart_uid : this.state.uid,
         paidDate : '',
         cartId : cartId,
-        status : 'progressing'
+        dispensaryId : this.state.dispensaryId,
+        status : 'progressing',
+        dispensaryToken : this.state.dispensaryToken
       };
       cartService.registerCart(addParam).then(addedInfo =>{
         this.setState({isAdding : false});

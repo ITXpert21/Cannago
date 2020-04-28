@@ -54,6 +54,7 @@ export default class CheckoutPage extends Component{
     this.setState({cartId : cartId});
     this.setState({cartlist : cartlist});
 
+
   }
 
   handleFieldParamsChange = (valid, params) => {
@@ -64,41 +65,38 @@ export default class CheckoutPage extends Component{
   }
 
   checkOut = async () => {
-    // this.setState({ loading: true, token: null });
-    // var number = this.state.params.number;
-    // var expMonth = this.state.params.expMonth;
-    // var expYear = this.state.params.expYear;
-    // var cvc = this.state.params.cvc;
 
-    // const tokenObject = await stripe.createTokenWithCard({
-    //   number, expMonth, expYear, cvc
-    // });
-    // this.setState({ token: tokenObject.tokenId });
 
-    // var totalPrice = this.state.totalGrossPrice + this.state.product_fee + this.state.grossprice * 0.05;
-    // axios({
-    //   method : 'POST',
-    //   url : 'http://localhost:5000/cannago-ba078/us-central1/payWithStripe',
-    //   data : {
-    //     amount: Math.round(totalPrice),
-    //     currency : 'usd',
-    //     token : this.state.token
-    //   },
-    // }).then(response =>{
-    //   console.log("222222222222 === ");
+    this.setState({ loading: true, token: null });
+    var number = this.state.params.number;
+    var expMonth = this.state.params.expMonth;
+    var expYear = this.state.params.expYear;
+    var cvc = this.state.params.cvc;
 
-    //   this.state.cartlist[0].amount = Math.round(totalPrice);
-    //   this.state.cartlist[0].currency = 'usd';
-    //   this.state.cartlist[0].status = "paid";
-    //   this.setState({loading: false});
-    //   cartService.updateCheckOutStatus(this.state.cartlist[0]).then(result=>{
+    const tokenObject = await stripe.createTokenWithCard({
+      number, expMonth, expYear, cvc
+    });
+    this.setState({ token: tokenObject.tokenId });
+
+    var totalPrice = this.state.totalGrossPrice + this.state.product_fee + this.state.grossprice * 0.05;
+    axios({
+      method : 'POST',
+      url : 'https://us-central1-cannago-ba078.cloudfunctions.net/payWithStripe',
+      data : {
+        amount: Math.round(totalPrice),
+        currency : 'usd',
+        token : this.state.token
+      },
+    }).then(response =>{
+      this.state.cartlist[0].amount = Math.round(totalPrice);
+      this.state.cartlist[0].currency = 'usd';
+      this.state.cartlist[0].status = "paid";
+      this.setState({loading: false});
+      cartService.updateCheckOutStatus(this.state.cartlist[0]).then(result=>{
         
-    //     this.props.navigation.navigate('TrackingPage');
-    //   });
-    // });
-
-    this.props.navigation.navigate('TrackingPage');
-
+        this.props.navigation.navigate('TrackingPage');
+      });
+    });
 
   };
 

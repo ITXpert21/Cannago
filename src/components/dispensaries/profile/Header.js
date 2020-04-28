@@ -6,8 +6,8 @@ export default class Header extends Component{
     return (
           <View style={{alignItems : 'center', justifyContent : 'center', width : '100%'}}>
             <View style={styles.logopicWrap}>
-              <Image style={styles.logopic} source={require('../assets/imgs/station1.png')} ></Image>
-              <Image style={styles.camera} source={require('../assets/imgs/camera.png')} ></Image>
+              <Image style={styles.logopic} source={require('../../../assets/imgs/station1.png')} ></Image>
+              <Image style={styles.camera} source={require('../../../assets/imgs/camera.png')} ></Image>
             </View>
             <Text style={{fontSize : 38, fontWeight : '600'}}>$1,325.70</Text>
             <Text style={{color: '#a2a6a2'}}>Available Balance</Text>

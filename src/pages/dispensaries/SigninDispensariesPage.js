@@ -35,7 +35,7 @@ export default class SigninDispensariesPage extends Component{
       var userObj = {
         email : this.state.email,
         password : this.state.password,
-        uid : uid 
+        uid : uid
       }
      await AsyncStorage.setItem('userInfo', JSON.stringify(userObj));
       //return jsonOfItem;

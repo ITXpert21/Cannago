@@ -8,6 +8,7 @@ import {
   Image,
   Text,
   View,
+  AsyncStorage,
   ActivityIndicator,
   TextInput
 } from 'react-native';
@@ -21,6 +22,8 @@ import userService from '../../services/userService';
 import Firebase from '../../config/firebase'
 import Toast from 'react-native-simple-toast';
 import RNFetchBlob from 'react-native-fetch-blob';
+import { notifications } from "react-native-firebase-push-notifications";
+
 const screenWidth = Math.round(Dimensions.get('window').width);
 const screenHeight = Math.round(Dimensions.get('window').height);
 
@@ -91,8 +94,7 @@ export default class SignupDispensariesPage extends Component{
     });
   }; 
 
-  registerDispensary() {
-
+  async registerDispensary() {
     if(this.state.first_name == ''){
       Toast.showWithGravity('Please insert first name.', Toast.SHORT , Toast.TOP);
       return;
@@ -129,7 +131,8 @@ export default class SignupDispensariesPage extends Component{
       Toast.showWithGravity('Please insert dispensary phone number.', Toast.SHORT , Toast.TOP);
       return;
     }    
-              
+    const token = await notifications.getToken();
+            
     this.setState({ isLoading: true });
 
     let dispensaryParam = {
@@ -151,7 +154,8 @@ export default class SignupDispensariesPage extends Component{
         companyname : this.state.companyname,
         feinumber : this.state.feinumber,
       },
-      usertype : 'dispensary', 
+      token : token,
+      usertype : 'dispensary'
     };
 
     Firebase.auth().createUserWithEmailAndPassword(this.state.dispensary_email, this.state.dispensary_pwd)
@@ -162,7 +166,7 @@ export default class SignupDispensariesPage extends Component{
         userService.registerDispensary(dispensaryParam).then(response =>{
           this.setState({isLoading: false});
           this._storeData(dispensaryParam);
-          //this.props.navigation.navigate('ProductCategoryPage')
+          this.props.navigation.navigate('ProductsDispensariesPage')
         });   
       }else{
         this.uploadImage(res.user.uid, this.state.photoUri)
@@ -170,8 +174,8 @@ export default class SignupDispensariesPage extends Component{
           dispensaryParam.photo_url = url;
           userService.registerDispensary(dispensaryParam).then(response =>{
             this.setState({isLoading: false, });
-            //this._storeData(userParam);
-            //this.props.navigation.navigate('ProductCategoryPage')
+            this._storeData(dispensaryParam);
+            this.props.navigation.navigate('ProductsDispensariesPage')
           });   
         }).catch(error => console.log(error));
       }  
@@ -220,6 +224,7 @@ export default class SignupDispensariesPage extends Component{
       console.log(error.message);
     }
   }
+
   render(){
     return (
       <SafeAreaView style={styles.container}>

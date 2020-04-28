@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
+  AsyncStorage,
   View
 } from 'react-native';
 
@@ -13,13 +14,19 @@ import Content from '../../components/dispensaries/profile/Content';
 import Tabs from '../../components/dispensaries/tab/Tabs';
 import ToggleSwitch from 'toggle-switch-react-native'
 export default class ProfileDispensariesPage extends Component{
-  state = {
-    selectTab: 'profile'
-  };    
+   
   constructor(props){
     super(props);
-    
-} 
+    this.state = {
+      selectTab: 'profile'
+    }; 
+  } 
+  async removeItemValue() {
+   
+    await AsyncStorage.removeItem('userInfo');
+    this.props.navigation.navigate('SigninDispensariesPage');
+
+  }
   render(){
     return (
       <SafeAreaView style={styles.container}>
@@ -39,7 +46,7 @@ export default class ProfileDispensariesPage extends Component{
           <Header/>
           <Content 
             gotoProfileInfoPage={() => this.props.navigation.navigate('DispensariesInfoPage')}
-            gotoSigninPage={() => this.props.navigation.navigate('SigninDispensariesPage')}
+            gotoSigninPage={() => this.removeItemValue()}
             />
         </ScrollView>
         

@@ -26,7 +26,7 @@ export default class ForgotPwdPage extends Component{
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.container}>
-          <Image style={styles.logopic} source={require('../../components/consumer/assets/imgs/shape.png')} ></Image>
+          <Image style={styles.logopic} source={require('../../assets/imgs/shape.png')} ></Image>
           <Text style={{margin: 20, fontSize : 16}}>Please enter the email address you used to {"\n"} make your Cannago Account</Text>
           <View style={styles.textinputview}> 
               <Icon name="envelope-o"  size={20} color="#37d613" style={styles.icon}/>
@@ -50,7 +50,7 @@ export default class ForgotPwdPage extends Component{
             >
             <DialogContent>
             <View style={{alignItems : 'center', justifyContent : 'center'}}>
-              <Image style={{width : 150, height : 150, marginTop : 30}} source={require('../../components/consumer/assets/imgs/shape2.png')} ></Image>
+              <Image style={{width : 150, height : 150, marginTop : 30}} source={require('../../assets/imgs/shape2.png')} ></Image>
               <Text style={{margin: 20, fontSize : 16}}>Please check your email inbox for further instructions!</Text>
             </View>
             </DialogContent>

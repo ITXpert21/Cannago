@@ -22,7 +22,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import userService from '../../services/userService';
 import Toast from 'react-native-simple-toast';
 import Firebase from '../../config/firebase';
-import RNFetchBlob from 'react-native-fetch-blob'
+import RNFetchBlob from 'react-native-fetch-blob';
+import { notifications } from "react-native-firebase-push-notifications";
+
 // import ImagePicker from 'react-native-image-crop-picker';
 const licenseKey = Platform.select({
   // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
@@ -132,8 +134,19 @@ export default class SignupPage extends Component{
       })
     })
   };
+  hasPermission = async () => {
+    //only works on iOS
+    return await notifications.hasPermission()
+    //or     return await messages.hasPermission()
+  }
+ 
+  requestPermission = async () => {
+    //only works on iOS
+    return await notifications.requestPermission()
+    //or     return await messages.requestPermission()
+  }
 
-   registerUser() {
+  async registerUser() {
     if(this.state.first_name == ''){
       Toast.showWithGravity('Please try to scan  license card.', Toast.SHORT , Toast.TOP);
       return;
@@ -154,7 +167,14 @@ export default class SignupPage extends Component{
     if(this.state.phonenumber == ''){
       Toast.showWithGravity('Please insert phone number.', Toast.SHORT , Toast.TOP);
       return;
-    }  
+    } 
+    
+    const hasPermission = await this.hasPermission();
+    if(!hasPermission)
+      this.requestPermission();
+    
+    const token = await notifications.getToken();
+
     this.setState({ isLoading: true });
     let userParam = {
       first_name : this.state.first_name,
@@ -165,6 +185,7 @@ export default class SignupPage extends Component{
       password : this.state.password,
       phonenumber : this.state.phonenumber,
       license_number : this.state.license_number,
+      token : token,
       usertype : 'consumer', 
     };
 

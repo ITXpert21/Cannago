@@ -65,10 +65,10 @@ export default class ProfileDriverPage extends Component{
               dialogTitle={
                 <View>
                   <View style={styles.dialogHeaderView}>
-                    <Image style={{width : 50, height : 50}} source={require('../../components/dispensaries/assets/imgs/driver_avatar.png')} ></Image>
+                    <Image style={{width : 50, height : 50}} source={require('../../assets/imgs/driver_avatar.png')} ></Image>
                     <Text style={{fontSize : 20, marginLeft : 20}}>Driver Name Bob D.</Text>
-                    <Image style={{width : 40, height : 40 , marginLeft : 20}} source={require('../../components/dispensaries/assets/imgs/message.png')} ></Image>
-                    <Image style={{width : 40, height : 40, marginLeft : 10}} source={require('../../components/dispensaries/assets/imgs/phonecall.png')} ></Image>
+                    <Image style={{width : 40, height : 40 , marginLeft : 20}} source={require('../../assets/imgs/message.png')} ></Image>
+                    <Image style={{width : 40, height : 40, marginLeft : 10}} source={require('../../assets/imgs/phonecall.png')} ></Image>
 
                   </View>
 
@@ -81,17 +81,17 @@ export default class ProfileDriverPage extends Component{
               >
               <DialogContent>
                 <View style={{flexDirection:'row', width : '100%', margin : 20}}>
-                  <Image source={require('../../components/dispensaries/assets/imgs/location.png')} ></Image>
+                  <Image source={require('../../assets/imgs/location.png')} ></Image>
                   <Text style={{fontSize : 16, marginLeft : 20,}}>East Central Atlanta</Text>
                 </View>
                 <Divider style={{ backgroundColor: '#a0a3a0', width : '100%', marginLeft : 50 }} />
                 <View style={{flexDirection:'row', width : '100%', margin : 20}}>
-                  <Image source={require('../../components/dispensaries/assets/imgs/pinpoints.png')} ></Image>
+                  <Image source={require('../../assets/imgs/pinpoints.png')} ></Image>
                   <Text style={{fontSize : 16, marginLeft : 20,}}>Little Five Points</Text>
                 </View>
                 <Divider style={{ backgroundColor: '#a0a3a0', width : 1000}} />
                 <View style={{flexDirection:'row', width : '100%', margin : 20, justifyContent : 'flex-start'}}>
-                  <Image source={require('../../components/dispensaries/assets/imgs/car.png')} ></Image>
+                  <Image source={require('../../assets/imgs/car.png')} ></Image>
                   <View>
                     <Text style={{fontSize : 16, color : '#a0a3a0', marginLeft : 20,  marginBottom : 5}}>Estimate complete in</Text>
                     <Text style={{fontSize : 16,marginLeft : 20,}}>10 Mins</Text>

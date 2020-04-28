@@ -43,7 +43,6 @@ export default class AddProductPage extends Component{
     this.state = {
       photo: {},
       photoUri: '',
-
       uid : '',
       productPrice : '',
       ourfee : '',
@@ -57,7 +56,7 @@ export default class AddProductPage extends Component{
   } 
   UNSAFE_componentWillMount(){
     AsyncStorage.getItem('userInfo').then((userinfo)=>{
-      this.setState({uid : JSON.parse(userinfo).uid})
+      this.setState({uid : JSON.parse(userinfo).uid});
     });  
   }
   handleProductPrice = (event) => {    

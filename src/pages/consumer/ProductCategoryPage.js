@@ -56,9 +56,9 @@ export  default class ProductCategoryPage extends Component{
     this.setState({ search });
   };
 
-  viewProductList = (dispensary_uid) => {
+  viewProductList = (dispensary) => {
     let navParam = {
-      dispensary_uid : dispensary_uid
+      dispensary : dispensary
     };
     this.props.navigation.navigate('ProductsPage', { navParam });
   }  
@@ -91,7 +91,7 @@ export  default class ProductCategoryPage extends Component{
             data={this.state.storelist}
             renderItem={({ item }) => (
               
-              <TouchableOpacity onPress={()=> this.viewProductList(item.uid)}>
+              <TouchableOpacity onPress={()=> this.viewProductList(item)}>
               <View style={{alignItems : 'center', marginTop : 20}}> 
                 <Text style={styles.stationtext}>{item.dispensary_info.storename}</Text>
                 {item.photo_url != '' ? 

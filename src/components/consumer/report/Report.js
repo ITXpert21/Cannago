@@ -22,16 +22,16 @@ export default class Report extends Component {
         let rating = 3;
         let stars = [];
         for (var i = 1; i <= 5; i++) {
-            let path = require('../assets/imgs/selectedStar.png');
+            let path = require('../../../assets/imgs/star1.png');
             if (i > rating) {
-                path = require('../assets/imgs/unselectedStar.png');
+                path = require('../../../assets/imgs/star2.png');
             }
             stars.push(<Image key={i} style={styles.ratingImage} source={path} />);
         }
         return (
 
             <View style={{ backgroundColor: 'white'}}>
-                <Image style={{ marginTop: -5, width: screenWidth}} source={require('../assets/imgs/bladeborder.png')} ></Image>
+                <Image style={{ marginTop: -5, width: screenWidth}} source={require('../../../assets/imgs/bladeborder.png')} ></Image>
                 <View>
                     <ListItem
                         title='Just CBD Gummies'
@@ -46,7 +46,7 @@ export default class Report extends Component {
                         containerStyle={styles.listitem}
                         leftAvatar={
                             <View style={styles.productimageview}>
-                                <Image style={styles.productimage} source={require('../assets/imgs/product3.png')} ></Image>
+                                <Image style={styles.productimage} source={require('../../../assets/imgs/product3.png')} ></Image>
                             </View>
                         }
                     />
@@ -79,7 +79,7 @@ export default class Report extends Component {
                         containerStyle={styles.listitem}
                         leftAvatar={
                             <View style={styles.productimageview}>
-                                <Image style={styles.productimage} source={require('../assets/imgs/product3.png')} ></Image>
+                                <Image style={styles.productimage} source={require('../../../assets/imgs/product3.png')} ></Image>
                             </View>
                         }
                     />

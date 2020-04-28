@@ -14,7 +14,6 @@ import {
   View
 } from 'react-native';
 
-import RecommendProduct from '../../components/consumer/product/RecommendProduct';
 import Tabs from '../../components/consumer/tab/Tabs';
 import Icon from 'react-native-vector-icons/Feather';
 import cartService from '../../services/cartService';
@@ -74,7 +73,14 @@ export default class CartPage extends Component{
   } 
 
   makeCart() {
+    if(this.state.cartId == undefined){
+      this.props.navigation.navigate('ProductCategoryPage');
+      return;
+    }
+
     this.setState({isUpdateingCart : true});
+
+
     cartService.updateCart(this.state.productlist, this.state.cartId).then(result=>{
       this.setState({isUpdateingCart : false});
       let navParam = {
@@ -99,7 +105,6 @@ export default class CartPage extends Component{
         {this.state.isEmptyData &&
           <ActivityIndicator size="large" color="#9E9E9E"/>
         }
-        {console.log(this.state.isShowAddPage)}
         {this.state.isShowAddPage && 
         <View style={styles.addcartbuttonview}> 
           <TouchableOpacity  onPress={() => this.props.navigation.navigate('ProductCategoryPage')}>

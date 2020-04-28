@@ -6,7 +6,7 @@ export default class Header extends Component{
     return (
           <View style={{alignItems : 'center', justifyContent : 'center', width : '100%'}}>
             <View style={styles.logopicWrap}>
-              <Image style={styles.logopic} source={require('../assets/imgs/photo.png')} ></Image>
+              <Image style={styles.logopic} source={require('../../../assets/imgs/photo.png')} ></Image>
               {/* <Image style={styles.camera} source={require('../assets/imgs/camera.png')} ></Image> */}
             </View>
             <Text style={{color: '#a2a6a2', marginTop : 10}}>Larry W, 33</Text>

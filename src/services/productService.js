@@ -19,14 +19,14 @@ class ProductService {
     }).catch();
   }  
   getProducts(uid){
+    console.log("uid", uid);
     var ref = Firebase.database().ref('products');
-    return ref.once("value").then((snapshot) => {
+    return ref.orderByChild('uid').equalTo(uid).once("value").then((snapshot) => {
       return snapshot;
     }).catch(err=> console.log(err));
   }  
 
   getProductsByDispensary(uid){
-    console.log("uid=======", uid);
     var ref = Firebase.database().ref('products');
     return ref.orderByChild('uid').equalTo(uid).once("value").then((snapshot) => {
       return snapshot;

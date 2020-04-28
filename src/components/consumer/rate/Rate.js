@@ -15,9 +15,9 @@ export default class Rate extends Component{
     let rating = 3;
     let stars = [];
     for (var i = 1; i <= 5; i++) {
-        let path = require('../assets/imgs/star1.png');
+        let path = require('../../../assets/imgs/star1.png');
         if (i > rating) {
-          path = require('../assets/imgs/star2.png');
+          path = require('../../../assets/imgs/star2.png');
         }
         stars.push(<Image key={i} style={styles.ratingImage} source={path} />);
       }      

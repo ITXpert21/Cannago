@@ -22,16 +22,16 @@ export default class DriverHistory extends Component {
         let rating = 3;
         let stars = [];
         for (var i = 1; i <= 5; i++) {
-            let path = require('../assets/imgs/selectedStar.png');
+            let path = require('../../../assets/imgs/star1.png');
             if (i > rating) {
-                path = require('../assets/imgs/unselectedStar.png');
+                path = require('../../../assets/imgs/star2.png');
             }
             stars.push(<Image key={i} style={styles.ratingImage} source={path} />);
         }
         return (
 
             <View style={{ backgroundColor: 'white', margin: 20 }}>
-                <Image style={{ width : '100%', marginTop : -5 }} source={require('../assets/imgs/bladeborder.png')} ></Image>
+                <Image style={{ width : '100%', marginTop : -5 }} source={require('../../../assets/imgs/bladeborder.png')} ></Image>
                 <View>
                     <ListItem
                         title='Victor N.Bought CBD Flower'
@@ -47,7 +47,7 @@ export default class DriverHistory extends Component {
                         containerStyle={styles.listitem}
                         leftAvatar={
                             <View style={styles.productimageview}>
-                                <Image style={styles.productimage} source={require('../assets/imgs/product3.png')} ></Image>
+                                <Image style={styles.productimage} source={require('../../../assets/imgs/product3.png')} ></Image>
                             </View>
                         }
                     />
@@ -78,7 +78,7 @@ export default class DriverHistory extends Component {
                         containerStyle={styles.listitem}
                         leftAvatar={
                             <View style={styles.productimageview}>
-                                <Image style={styles.productimage} source={require('../assets/imgs/product3.png')} ></Image>
+                                <Image style={styles.productimage} source={require('../../../assets/imgs/product3.png')} ></Image>
                             </View>
                         }
                     />

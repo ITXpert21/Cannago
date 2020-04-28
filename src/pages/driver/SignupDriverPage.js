@@ -21,6 +21,7 @@ import ImagePicker from 'react-native-image-picker';
 import Firebase from '../../config/firebase'
 import RNFetchBlob from 'react-native-fetch-blob'
 import userService from '../../services/userService';
+import { notifications } from "react-native-firebase-push-notifications";
 
 const licenseKey = Platform.select({
   // iOS license key for applicationID: org.reactjs.native.example.BlinkIDReactNative
@@ -130,9 +131,18 @@ export default class SignupDriverPage extends Component{
                 console.log(error);
     }
   } 
-
-  registerDriver() {
-    this.setState({isLoading: true});
+  hasPermission = async () => {
+    //only works on iOS
+    return await notifications.hasPermission()
+    //or     return await messages.hasPermission()
+  }
+ 
+  requestPermission = async () => {
+    //only works on iOS
+    return await notifications.requestPermission()
+    //or     return await messages.requestPermission()
+  }
+  async registerDriver() {
 
     if(this.state.first_name == ''){
       Toast.showWithGravity('Please try to scan  license card.', Toast.SHORT , Toast.TOP);
@@ -145,7 +155,15 @@ export default class SignupDriverPage extends Component{
     if(this.state.email == ''){
       Toast.showWithGravity('Please insert password.', Toast.SHORT , Toast.TOP);
       return;
-    }      
+    }   
+    this.setState({isLoading: true});
+    
+    const hasPermission = await this.hasPermission();
+    if(!hasPermission)
+      this.requestPermission();
+
+    const token = await notifications.getToken();
+   
     let param = {
       owner_info : {
         first_name: this.state.first_name,
@@ -167,7 +185,7 @@ export default class SignupDriverPage extends Component{
         companyname : this.state.companyname,
         agreement : this.state.agreement,
       },
-      deviceToken : '', 
+      token : token, 
       usertype : 'driver', 
     };
 
